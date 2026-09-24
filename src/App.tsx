@@ -1,4 +1,6 @@
 /**
+ * src/App.tsx
+ *
  * Vlaams Woorden - B1 Woordenschat in Context
  * Authentic Flemish Dutch Flashcards
  * Mobile-first with Active Recall (Cloze), Mini-Leitner scheduling, and Speech/Audio playback
@@ -31,7 +33,6 @@ export default function App() {
   const [studyMode, setStudyMode] = useState<'due_only' | 'practice_all'>(
     'due_only'
   )
-  const [batchOffset, setBatchOffset] = useState<number>(0)
 
   // Initialize deck directly without needing cascading useEffect calls
   const [queue, setQueue] = useState<WordCard[]>(() =>
@@ -90,14 +91,11 @@ export default function App() {
 
   // Initialize deck whenever words, progress, studyMode, or dailyLimit change
   const startSession = useCallback(
-    (
-      mode: 'due_only' | 'practice_all' = 'due_only',
-      limit = dailyLimit,
-      offset = 0
-    ) => {
+    (mode: 'due_only' | 'practice_all' = 'due_only', limit = dailyLimit) => {
       setStudyMode(mode)
-      setBatchOffset(offset)
-      const active = initDeck(words, progress, mode, limit, offset)
+      // Always offset 0: cards already reviewed today leave the 'brandNewCards' pool,
+      // so the next slice will always accurately start from the next unstudied card.
+      const active = initDeck(words, progress, mode, limit, 0)
       setQueue(active)
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
@@ -122,20 +120,18 @@ export default function App() {
   }
 
   const handleRestartSession = () => {
-    startSession(studyMode, dailyLimit, batchOffset)
+    startSession(studyMode, dailyLimit)
   }
 
   const handleNextBatch = () => {
-    // Start next batch of new words
-    const nextOffset = batchOffset + dailyLimit
-    startSession('due_only', dailyLimit, nextOffset)
+    // Slices next set of unstudied words starting from 0 (preventing skipped words)
+    startSession('due_only', dailyLimit)
   }
 
   const handleWipeAllProgress = () => {
     clearProgress()
     const emptyProgress: ProgressData = {}
     setProgress(emptyProgress)
-    setBatchOffset(0)
     const active = initDeck(words, emptyProgress, 'due_only', dailyLimit, 0)
     setQueue(active)
     setInitialDueCount(active.length)
@@ -152,7 +148,6 @@ export default function App() {
     const emptyProgress: ProgressData = {}
     setProgress(emptyProgress)
     clearProgress()
-    setBatchOffset(0)
     const active = initDeck(newWords, emptyProgress, 'due_only', dailyLimit, 0)
     setQueue(active)
     setInitialDueCount(active.length)
@@ -163,7 +158,6 @@ export default function App() {
     resetStoredWordsToDefault()
     setWords(DEFAULT_WORDS)
     const currentProg = loadProgress()
-    setBatchOffset(0)
     const active = initDeck(
       DEFAULT_WORDS,
       currentProg,
@@ -178,7 +172,7 @@ export default function App() {
 
   const handleDailyLimitChange = (newLimit: number) => {
     setDailyLimit(newLimit)
-    startSession('due_only', newLimit, batchOffset)
+    startSession('due_only', newLimit)
   }
 
   // Mastered words count
