@@ -543,7 +543,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         )}
       </div>
 
-      <div className="keyboard-shortcuts flex items-center justify-center gap-4 mt-4 text-[#554336] text-[11px] font-medium">
+      <div className="keyboard-shortcuts flex flex-wrap items-center justify-center gap-3 mt-4 text-[#554336] text-[11px] font-medium">
         <span className="flex items-center gap-1">
           <kbd className="bg-[#eeedf7] px-1.5 py-0.5 rounded text-[#1a1b22] font-semibold font-mono text-[10px]">
             Spatie
@@ -561,6 +561,12 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
             →
           </kbd>{' '}
           Ken ik
+        </span>
+        <span className="flex items-center gap-1">
+          <kbd className="bg-[#eeedf7] px-1.5 py-0.5 rounded text-[#1a1b22] font-semibold font-mono text-[10px]">
+            Z
+          </kbd>{' '}
+          Herstel
         </span>
       </div>
     </div>

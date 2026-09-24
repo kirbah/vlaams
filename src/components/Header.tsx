@@ -4,12 +4,18 @@ import { Icon } from './Icon'
 interface HeaderProps {
   onOpenStats: () => void
   onResetSession: () => void
+  onUndo?: () => void
+  canUndo?: boolean
+  undoCount?: number
   title?: string
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenStats,
   onResetSession,
+  onUndo,
+  canUndo = false,
+  undoCount = 0,
   title = 'Study',
 }) => {
   return (
@@ -35,6 +41,26 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onUndo && (
+            <button
+              onClick={onUndo}
+              disabled={!canUndo}
+              title={
+                canUndo
+                  ? `Stap terug (${undoCount} beschikbaar) [Z of Ctrl+Z]`
+                  : 'Niets om ongedaan te maken'
+              }
+              aria-label="Laatste actie ongedaan maken"
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                canUndo
+                  ? 'bg-[#eeedf7] hover:bg-[#e8e7f1] text-[#1a1b22] active:scale-95 shadow-xs cursor-pointer'
+                  : 'opacity-30 text-[#554336] cursor-not-allowed'
+              }`}
+            >
+              <Icon name="undo" size={17} />
+            </button>
+          )}
+
           <button
             onClick={onOpenStats}
             title="Woordenlijst & Voortgang"

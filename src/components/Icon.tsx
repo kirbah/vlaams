@@ -17,6 +17,7 @@ export type IconName =
   | 'task_alt'
   | 'add_circle'
   | 'person'
+  | 'undo'
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   name: IconName
@@ -34,6 +35,28 @@ export const Icon: React.FC<IconProps> = ({
 
   const renderPath = () => {
     switch (name) {
+      case 'undo':
+        return (
+          <>
+            <path
+              d="M9 14L4 9l5-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </>
+        )
+
       case 'volume_up':
         return (
           <>

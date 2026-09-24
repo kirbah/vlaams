@@ -7,6 +7,7 @@ import { WordCard, ProgressData } from '../types'
 import { DEFAULT_WORDS } from '../data/defaultWords'
 import {
   loadProgress,
+  saveProgress,
   clearProgress,
   loadStoredWords,
   saveStoredWords,
@@ -17,6 +18,12 @@ import {
   setDailyNewLimit,
   getRemainingNewCardsCount,
 } from '../utils/leitner'
+
+interface DeckHistorySnapshot {
+  queue: WordCard[]
+  progress: ProgressData
+  sessionReviewedCount: number
+}
 
 export function useStudyDeck() {
   const [words, setWords] = useState<WordCard[]>(() => loadStoredWords())
@@ -49,6 +56,9 @@ export function useStudyDeck() {
   )
   const [sessionReviewedCount, setSessionReviewedCount] = useState<number>(0)
 
+  // Multi-step undo history stack
+  const [history, setHistory] = useState<DeckHistorySnapshot[]>([])
+
   // Fetch words.json ONCE on mount if custom words not in storage
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}words.json`)
@@ -61,7 +71,6 @@ export function useStudyDeck() {
           const custom = localStorage.getItem('vlaams_custom_words')
           if (!custom) {
             setWords(data)
-            // Use local dailyLimit state instead of a hook dependency to avoid re-triggering
             const active = initDeck(
               data,
               loadProgress(),
@@ -72,6 +81,7 @@ export function useStudyDeck() {
             setQueue(active)
             setInitialDueCount(active.length)
             setSessionReviewedCount(0)
+            setHistory([])
           }
         }
       })
@@ -87,6 +97,7 @@ export function useStudyDeck() {
       setQueue(active)
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
+      setHistory([])
     },
     [words, progress, dailyLimit]
   )
@@ -94,6 +105,17 @@ export function useStudyDeck() {
   const handleAnswer = useCallback(
     (isCorrect: boolean) => {
       if (queue.length === 0) return
+
+      // Save a deep snapshot before applying answer
+      setHistory((prev) => [
+        ...prev,
+        {
+          queue: [...queue],
+          progress: { ...progress },
+          sessionReviewedCount,
+        },
+      ])
+
       const currentCard = queue[0]
       const { updatedDeck, updatedProgress } = processAnswer(
         currentCard,
@@ -107,8 +129,25 @@ export function useStudyDeck() {
         setSessionReviewedCount((prev) => prev + 1)
       }
     },
-    [queue, progress]
+    [queue, progress, sessionReviewedCount]
   )
+
+  const undo = useCallback(() => {
+    setHistory((prevHistory) => {
+      if (prevHistory.length === 0) return prevHistory
+
+      const newHistory = [...prevHistory]
+      const lastSnapshot = newHistory.pop()!
+
+      // Restore states
+      setQueue(lastSnapshot.queue)
+      setProgress(lastSnapshot.progress)
+      setSessionReviewedCount(lastSnapshot.sessionReviewedCount)
+      saveProgress(lastSnapshot.progress)
+
+      return newHistory
+    })
+  }, [])
 
   const restartSession = useCallback(() => {
     startSession(studyMode, dailyLimit)
@@ -130,6 +169,7 @@ export function useStudyDeck() {
     setQueue(active)
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
+    setHistory([])
   }, [words, dailyLimit])
 
   const importWords = useCallback(
@@ -149,6 +189,7 @@ export function useStudyDeck() {
       setQueue(active)
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
+      setHistory([])
     },
     [dailyLimit]
   )
@@ -167,6 +208,7 @@ export function useStudyDeck() {
     setQueue(active)
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
+    setHistory([])
   }, [dailyLimit])
 
   const changeDailyLimit = useCallback(
@@ -193,6 +235,9 @@ export function useStudyDeck() {
     dailyLimit,
     masteredCount,
     remainingNewCount,
+    canUndo: history.length > 0,
+    undoCount: history.length,
+    undo,
     handleAnswer,
     restartSession,
     nextBatch,

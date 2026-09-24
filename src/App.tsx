@@ -1,11 +1,8 @@
 /**
  * src/App.tsx
- *
- * Vlaams Woorden - B1 Woordenschat in Context
- * Mobile-first with Active Recall, Spaced Repetition, and Speech/Audio playback
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useStudyDeck } from './hooks/useStudyDeck'
 import { Header } from './components/Header'
 import { FlashcardDeck } from './components/FlashcardDeck'
@@ -27,6 +24,9 @@ export default function App() {
     dailyLimit,
     masteredCount,
     remainingNewCount,
+    canUndo,
+    undoCount,
+    undo,
     handleAnswer,
     restartSession,
     nextBatch,
@@ -37,13 +37,37 @@ export default function App() {
     changeDailyLimit,
   } = useStudyDeck()
 
+  // Global keyboard shortcut for Undo (Z or Ctrl+Z / Cmd+Z)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        return
+      }
+      if (
+        (e.key.toLowerCase() === 'z' && (e.ctrlKey || e.metaKey)) ||
+        e.key.toLowerCase() === 'z'
+      ) {
+        if (canUndo && !isStatsOpen && !isResetConfirmOpen) {
+          e.preventDefault()
+          undo()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [canUndo, undo, isStatsOpen, isResetConfirmOpen])
+
   return (
     <div className="bg-[#fbf8ff] text-[#1a1b22] min-h-screen flex flex-col font-sans">
-      {/* Top Header */}
+      {/* Top Header with Multi-level Undo */}
       <Header
         title="Study"
         onOpenStats={() => setIsStatsOpen(true)}
         onResetSession={() => setIsResetConfirmOpen(true)}
+        onUndo={undo}
+        canUndo={canUndo}
+        undoCount={undoCount}
       />
 
       {/* Main Viewport Container */}
@@ -63,6 +87,9 @@ export default function App() {
             masteredCount={masteredCount}
             remainingNewCount={remainingNewCount}
             dailyLimit={dailyLimit}
+            canUndo={canUndo}
+            undoCount={undoCount}
+            onUndo={undo}
             onNextBatch={nextBatch}
             onResetProgress={wipeAllProgress}
             onPracticeAll={practiceAll}

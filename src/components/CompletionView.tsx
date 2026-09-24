@@ -7,6 +7,9 @@ interface CompletionViewProps {
   masteredCount: number
   remainingNewCount: number
   dailyLimit: number
+  canUndo?: boolean
+  undoCount?: number
+  onUndo?: () => void
   onNextBatch: () => void
   onResetProgress: () => void
   onPracticeAll: () => void
@@ -18,6 +21,9 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
   masteredCount,
   remainingNewCount,
   dailyLimit,
+  canUndo = false,
+  undoCount = 0,
+  onUndo,
   onNextBatch,
   onResetProgress,
   onPracticeAll,
@@ -82,6 +88,17 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
         >
           Oefen alle woorden opnieuw
         </button>
+
+        {/* Undo button to rescue an accidental final swipe */}
+        {canUndo && onUndo && (
+          <button
+            onClick={onUndo}
+            className="w-full py-2.5 px-4 rounded-xl bg-[#f4f2fd] hover:bg-[#eeedf7] text-[#1a1b22] text-xs font-semibold active:scale-95 transition-all text-center flex items-center justify-center gap-1.5 border border-[#eeedf7]"
+          >
+            <Icon name="undo" size={16} />
+            <span>Herstel laatste kaart ({undoCount})</span>
+          </button>
+        )}
 
         <button
           onClick={onResetProgress}

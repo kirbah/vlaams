@@ -6,6 +6,13 @@
  */
 
 /**
+ * FEATURE FLAG: Set to `true` once your .opus audio files are hosted/available.
+ * When `false`, the app directly uses the browser's SpeechSynthesis API,
+ * avoiding 404 console errors for missing files.
+ */
+export const ENABLE_AUDIO_FILES = false
+
+/**
  * Single place to construct audio URLs for words and sentences.
  * Format: audio/${cleanKey}.opus
  */
@@ -35,29 +42,34 @@ export async function playAudioTrack(
   textFallback: string,
   speechLang: string = 'nl-BE'
 ): Promise<void> {
-  try {
-    const audio = new Audio(audioUrl)
-    await audio.play()
-  } catch {
-    // Fallback to browser speech synthesis
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(textFallback)
-
-      const voices = window.speechSynthesis.getVoices()
-      const beVoice = voices.find(
-        (v) => v.lang === 'nl-BE' || v.lang.startsWith('nl-BE')
-      )
-      const nlVoice = voices.find((v) => v.lang.startsWith('nl'))
-      if (beVoice) {
-        utterance.voice = beVoice
-      } else if (nlVoice) {
-        utterance.voice = nlVoice
-      }
-      utterance.lang = speechLang
-      utterance.rate = 0.95
-      window.speechSynthesis.speak(utterance)
+  if (ENABLE_AUDIO_FILES) {
+    try {
+      const audio = new Audio(audioUrl)
+      await audio.play()
+      return
+    } catch {
+      // Fallback to browser speech synthesis if audio file fails
     }
+  }
+
+  // Fallback to browser speech synthesis
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(textFallback)
+
+    const voices = window.speechSynthesis.getVoices()
+    const beVoice = voices.find(
+      (v) => v.lang === 'nl-BE' || v.lang.startsWith('nl-BE')
+    )
+    const nlVoice = voices.find((v) => v.lang.startsWith('nl'))
+    if (beVoice) {
+      utterance.voice = beVoice
+    } else if (nlVoice) {
+      utterance.voice = nlVoice
+    }
+    utterance.lang = speechLang
+    utterance.rate = 0.95
+    window.speechSynthesis.speak(utterance)
   }
 }
 
