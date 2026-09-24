@@ -47,7 +47,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   const today = getTodayString()
 
   // Leitner statistics calculation
-  const totalWords = words.length
   let masteredCount = 0
   let dueReviewsCount = 0
   let unstudiedNewCount = 0
@@ -123,8 +122,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({
       onImportWords(parsed)
       setImportSuccess(`Succesvol ${parsed.length} woorden geïmporteerd!`)
       setJsonInput('')
-    } catch (err: any) {
-      setImportError(err.message || 'Ongeldige JSON structuur.')
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Ongeldige JSON structuur.'
+      setImportError(message)
     }
   }
 
@@ -359,7 +360,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                       >
                         <div className="space-y-1 flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            {/* Natural casing for words, not blocky uppercase */}
                             <span className="text-sm font-bold text-[#1a1b22] tracking-tight">
                               {item.word}
                             </span>
@@ -375,7 +375,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                           <p className="text-xs text-[#8d4b00] font-medium">
                             {item.en}
                           </p>
-                          {/* Polish: Target word directly bolded in the sentence row */}
                           <p className="text-xs text-[#554336] leading-relaxed">
                             {renderSentenceWithBold(item.ex)}
                           </p>
@@ -444,7 +443,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                placeholder={`[\n  {\n    "word": "aankondigen",\n    "en": "To announce",\n    "ex": "We zullen het morgen *aankondigen*."\n  }\n]`}
+                placeholder={`[\n  {\n    "word": "aankondigen",\n    "en": "To announce",\n    "ex": "We zullen het nieuwe project morgen *aankondigen*."\n  }\n]`}
                 rows={8}
                 className="w-full p-3 font-mono text-xs rounded-xl bg-[#f4f2fd] border border-[#eeedf7] focus:outline-none focus:border-[#8d4b00] text-[#1a1b22]"
               />

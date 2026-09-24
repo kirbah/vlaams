@@ -183,7 +183,7 @@ export function parseCard(card: WordCard, currentStreak = 0): ParsedCard {
   const frontSentence = card.ex.replace(/\*(.*?)\*/g, '__________')
   const fullSentence = card.ex.replace(/\*/g, '')
 
-  let nextIntervalLabel = '+1 dag'
+  let nextIntervalLabel
   if (currentStreak === 0) nextIntervalLabel = '+1 dag'
   else if (currentStreak === 1) nextIntervalLabel = '+3 dagen'
   else if (currentStreak === 2) nextIntervalLabel = '+7 dagen'

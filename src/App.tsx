@@ -27,16 +27,35 @@ import { ResetConfirmModal } from './components/ResetConfirmModal'
 export default function App() {
   const [words, setWords] = useState<WordCard[]>(() => loadStoredWords())
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress())
-  const [queue, setQueue] = useState<WordCard[]>([])
-  const [initialDueCount, setInitialDueCount] = useState<number>(0)
-  const [sessionReviewedCount, setSessionReviewedCount] = useState<number>(0)
-  const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false)
-  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false)
+  const [dailyLimit, setDailyLimit] = useState<number>(() => getDailyNewLimit())
   const [studyMode, setStudyMode] = useState<'due_only' | 'practice_all'>(
     'due_only'
   )
-  const [dailyLimit, setDailyLimit] = useState<number>(() => getDailyNewLimit())
   const [batchOffset, setBatchOffset] = useState<number>(0)
+
+  // Initialize deck directly without needing cascading useEffect calls
+  const [queue, setQueue] = useState<WordCard[]>(() =>
+    initDeck(
+      loadStoredWords(),
+      loadProgress(),
+      'due_only',
+      getDailyNewLimit(),
+      0
+    )
+  )
+  const [initialDueCount, setInitialDueCount] = useState<number>(
+    () =>
+      initDeck(
+        loadStoredWords(),
+        loadProgress(),
+        'due_only',
+        getDailyNewLimit(),
+        0
+      ).length
+  )
+  const [sessionReviewedCount, setSessionReviewedCount] = useState<number>(0)
+  const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false)
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false)
 
   // Try to load /words.json on mount if custom words not in storage
   useEffect(() => {
@@ -50,13 +69,24 @@ export default function App() {
           const custom = localStorage.getItem('vlaams_custom_words')
           if (!custom) {
             setWords(data)
+            const currentProg = loadProgress()
+            const active = initDeck(
+              data,
+              currentProg,
+              'due_only',
+              dailyLimit,
+              0
+            )
+            setQueue(active)
+            setInitialDueCount(active.length)
+            setSessionReviewedCount(0)
           }
         }
       })
       .catch(() => {
         // Fallback already provided by DEFAULT_WORDS
       })
-  }, [])
+  }, [dailyLimit])
 
   // Initialize deck whenever words, progress, studyMode, or dailyLimit change
   const startSession = useCallback(
@@ -74,11 +104,6 @@ export default function App() {
     },
     [words, progress, dailyLimit]
   )
-
-  // Initial load
-  useEffect(() => {
-    startSession('due_only', dailyLimit, 0)
-  }, [words])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (queue.length === 0) return

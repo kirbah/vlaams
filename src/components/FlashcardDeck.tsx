@@ -19,10 +19,17 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   onAnswer,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false)
+  const [prevWord, setPrevWord] = useState(card.word)
   const [isAnimating, setIsAnimating] = useState(false)
   const [playingAudioType, setPlayingAudioType] = useState<
     'word' | 'sentence' | null
   >(null)
+
+  // Adjust state during render when card changes without triggering cascading effect renders
+  if (card.word !== prevWord) {
+    setPrevWord(card.word)
+    setIsFlipped(false)
+  }
 
   // Drag physics state
   const cardRef = useRef<HTMLDivElement>(null)
@@ -38,9 +45,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   const currentStreak = cardProgress ? cardProgress.streak : 0
   const parsed = parseCard(card, currentStreak)
 
-  // Reset flip state when card changes
+  // Reset card transform and stamps DOM styles when card changes
   useEffect(() => {
-    setIsFlipped(false)
     if (cardRef.current) {
       cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
       cardRef.current.style.transition = 'none'
@@ -82,11 +88,11 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
     setIsFlipped((prev) => !prev)
   }, [isAnimating])
 
-  const handleRevealAnswer = () => {
+  const handleRevealAnswer = useCallback(() => {
     if (!isFlipped && !isAnimating) {
       setIsFlipped(true)
     }
-  }
+  }, [isFlipped, isAnimating])
 
   const handleSwipeOut = useCallback(
     (direction: 'left' | 'right') => {
@@ -116,6 +122,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
       }
 
       setTimeout(() => {
+        setIsFlipped(false)
         onAnswer(direction === 'right')
         if (cardRef.current) {
           cardRef.current.style.transition = 'none'
@@ -249,7 +256,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleFlip, handleSwipeOut, isFlipped])
+  }, [handleFlip, handleSwipeOut, handleRevealAnswer, isFlipped])
 
   // Highlighted sentence formatting for back of card (supports multiple cloze markers like *enerzijds* and *anderzijds*)
   const renderHighlightedSentence = () => {
@@ -276,7 +283,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
 
   return (
     <div className="flex flex-col w-full">
-      {/* Top Session Meta Bar - Cleaned: Dangerous Reset button completely removed */}
+      {/* Top Session Meta Bar */}
       <div className="flex items-center justify-between py-1 px-1 mb-2 select-none">
         <div className="text-xs font-bold text-[#554336] flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#8d4b00]" />
@@ -376,7 +383,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                 </div>
               </div>
             ) : (
-              /* BACK OF CARD (Revealed - Matching Requested Clean Spec) */
+              /* BACK OF CARD (Revealed) */
               <div className="flex flex-col justify-between h-full w-full animate-fade-in">
                 <div>
                   {/* Subtle top indicator */}
@@ -431,7 +438,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                     </p>
                   </div>
 
-                  {/* Middle Box: VOLLEDIGE ZIN (Selectable) - Matching min-h-[92px] and text-[16px] */}
+                  {/* Middle Box: VOLLEDIGE ZIN (Selectable) */}
                   <div className="mt-4 p-4 rounded-xl bg-[#f4f2fd] border border-[#eeedf7]/80 text-center min-h-[92px] flex flex-col justify-center relative group">
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <p className="text-[11px] font-bold text-[#554336] uppercase tracking-wider">
@@ -481,10 +488,10 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         </div>
       </div>
 
-      {/* Response Actions Area (Fixed height container to prevent card jumping) */}
+      {/* Response Actions Area */}
       <div className="w-full mt-3 min-h-[82px] flex flex-col justify-start">
         {!isFlipped ? (
-          /* Front Action: Single Reveal Button to prevent false positives */
+          /* Front Action: Single Reveal Button */
           <div className="w-full">
             <button
               onClick={handleRevealAnswer}
@@ -493,8 +500,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
               <Icon name="visibility" size={22} />
               <span>Toon antwoord</span>
             </button>
-            <div className="h-5" />{' '}
-            {/* Matches sublabel height of back buttons */}
+            <div className="h-5" />
           </div>
         ) : (
           /* Back Actions: Revealed only after flipping */
@@ -532,7 +538,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         )}
       </div>
 
-      {/* Subtle Keyboard & Accessibility Helper - Hidden on mobile/touch screens via CSS */}
+      {/* Subtle Keyboard & Accessibility Helper */}
       <div className="keyboard-shortcuts flex items-center justify-center gap-4 mt-4 text-[#554336] text-[11px] font-medium">
         <span className="flex items-center gap-1">
           <kbd className="bg-[#eeedf7] px-1.5 py-0.5 rounded text-[#1a1b22] font-semibold font-mono text-[10px]">
