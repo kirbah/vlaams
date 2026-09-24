@@ -1,3 +1,7 @@
+/**
+ * src/components/FlashcardDeck.tsx
+ */
+
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { WordCard, ProgressData } from '../types'
 import { parseCard, playWordAudio, playSentenceAudio } from '../utils/leitner'
@@ -31,14 +35,17 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
     setIsFlipped(false)
   }
 
-  // Drag physics state
+  // Enhanced gesture tracking physics
   const cardRef = useRef<HTMLDivElement>(null)
   const stampRejectRef = useRef<HTMLDivElement>(null)
   const stampAcceptRef = useRef<HTMLDivElement>(null)
   const dragInfo = useRef({
     isDragging: false,
     startX: 0,
+    startY: 0,
     currentX: 0,
+    currentY: 0,
+    startTime: 0,
   })
 
   const cardProgress = progress[card.word]
@@ -96,7 +103,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
 
   const handleSwipeOut = useCallback(
     (direction: 'left' | 'right') => {
-      // High Priority Fix: Do not allow grading before reveal!
+      // Do not allow grading before reveal
       if (!isFlipped) {
         setIsFlipped(true)
         return
@@ -137,17 +144,18 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
     [isFlipped, isAnimating, onAnswer]
   )
 
-  // Pointer / Touch gestures for swipe
+  // Pointer / Touch gestures for swipe with accidental tap protection
   const onPointerDown = (e: React.PointerEvent) => {
     if (isAnimating) return
-    // Don't drag if clicking audio button directly
     if ((e.target as HTMLElement).closest('[data-audio-button]')) return
-    // Don't initiate card drag if user is interacting with selectable text
     if ((e.target as HTMLElement).closest('[data-selectable-text]')) return
 
     dragInfo.current.isDragging = true
     dragInfo.current.startX = e.clientX
+    dragInfo.current.startY = e.clientY
     dragInfo.current.currentX = e.clientX
+    dragInfo.current.currentY = e.clientY
+    dragInfo.current.startTime = Date.now()
 
     if (cardRef.current) {
       cardRef.current.style.transition = 'none'
@@ -157,14 +165,22 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragInfo.current.isDragging || isAnimating) return
     dragInfo.current.currentX = e.clientX
-    const diffX = dragInfo.current.currentX - dragInfo.current.startX
-    const rotate = diffX * 0.05
+    dragInfo.current.currentY = e.clientY
 
+    const diffX = dragInfo.current.currentX - dragInfo.current.startX
+    const diffY = dragInfo.current.currentY - dragInfo.current.startY
+
+    // Guard: If movement is predominantly vertical scroll, don't drag card horizontally
+    if (Math.abs(diffY) > Math.abs(diffX) * 1.5 && Math.abs(diffX) < 25) {
+      return
+    }
+
+    const rotate = diffX * 0.05
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(${diffX}px) rotate(${rotate}deg)`
     }
 
-    // Only show grading stamps if card is already revealed!
+    // Only show grading stamps if card is revealed
     if (isFlipped) {
       if (diffX > 20) {
         const opacity = Math.min(1, (diffX - 20) / 70)
@@ -186,21 +202,25 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   const onPointerUp = (e: React.PointerEvent) => {
     if (!dragInfo.current.isDragging || isAnimating) return
     dragInfo.current.isDragging = false
-    const diffX = dragInfo.current.currentX - dragInfo.current.startX
 
-    // Check if user currently has text selected (e.g. highlighted text)
+    const diffX = dragInfo.current.currentX - dragInfo.current.startX
+    const diffY = dragInfo.current.currentY - dragInfo.current.startY
+    const distance = Math.hypot(diffX, diffY)
+    const duration = Date.now() - dragInfo.current.startTime
+
+    // Text selection safeguard
     const selection = window.getSelection
       ? window.getSelection()?.toString()
       : ''
     const hasSelection = Boolean(selection && selection.trim().length > 0)
-
-    // If clicked on selectable text and did not swipe, do NOT flip the card
     const isTargetSelectable = Boolean(
       (e.target as HTMLElement)?.closest('[data-selectable-text]')
     )
 
-    if (Math.abs(diffX) < 10) {
-      // Tap detected -> flip card ONLY IF not interacting with selectable text or active selection
+    // Robust Tap Detection: Must be fast (<300ms) and minimal movement (<12px)
+    const isIntentionalTap = distance < 12 && duration < 300
+
+    if (isIntentionalTap) {
       if (!isTargetSelectable && !hasSelection) {
         handleFlip()
       }
@@ -208,8 +228,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
       handleSwipeOut('right')
     } else if (isFlipped && diffX < -80) {
       handleSwipeOut('left')
-    } else if (!isFlipped && Math.abs(diffX) > 40) {
-      // Drag on front reveals answer
+    } else if (!isFlipped && Math.abs(diffX) > 50) {
+      // Intentional drag on front reveals answer
       handleRevealAnswer()
       if (cardRef.current) {
         cardRef.current.style.transition =
@@ -217,7 +237,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
       }
     } else {
-      // Snap back to center
+      // Snap back if threshold not met (finger resting, micro-twitch, or cancelled drag)
       if (cardRef.current) {
         cardRef.current.style.transition =
           'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
@@ -258,9 +278,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleFlip, handleSwipeOut, handleRevealAnswer, isFlipped])
 
-  // Highlighted sentence formatting for back of card (supports multiple cloze markers like *enerzijds* and *anderzijds*)
   const renderHighlightedSentence = () => {
-    // Regex match to preserve split delimiters
     const tokens = card.ex.split(/(\*.*?\*)/g)
     return (
       <>
@@ -309,7 +327,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
 
       {/* Study Area / Swipe Canvas */}
       <div className="relative w-full flex flex-col justify-center min-h-[380px] my-1">
-        {/* Swipe Stamp Indicators (only triggered on back) */}
         <div
           ref={stampRejectRef}
           className="absolute top-6 left-6 z-30 opacity-0 pointer-events-none transition-opacity bg-[#ffdad6] text-[#93000a] px-3.5 py-1.5 rounded-lg font-bold text-sm uppercase tracking-wider -rotate-12 shadow-md border border-[#ffcdc7]"
@@ -324,7 +341,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
           Ken ik
         </div>
 
-        {/* Interactive Card */}
         <div
           className="relative w-full h-[390px] touch-pan-y cursor-grab active:cursor-grabbing"
           onPointerDown={onPointerDown}
@@ -334,9 +350,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         >
           <div
             ref={cardRef}
-            className="w-full h-full relative rounded-2xl shadow-md bg-[#ffffff] border border-[#eeedf7] flex flex-col justify-between p-6 overflow-hidden"
+            className="w-full h-full relative rounded-2xl shadow-md bg-[#ffffff] border border-[#eeedf7] flex flex-col justify-between p-6 overflow-hidden select-none"
           >
-            {/* FRONT OF CARD (Challenge) */}
             {!isFlipped ? (
               <div className="flex flex-col justify-between h-full w-full">
                 <div>
@@ -350,7 +365,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                     </span>
                   </div>
 
-                  {/* Top Word Block: Fixed height container to guarantee zero sentence shift */}
                   <div className="mt-4 text-center min-h-[64px] flex flex-col justify-center">
                     <span className="text-[11px] font-bold text-[#554336] tracking-wider uppercase">
                       ENGELS
@@ -383,10 +397,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                 </div>
               </div>
             ) : (
-              /* BACK OF CARD (Revealed) */
               <div className="flex flex-col justify-between h-full w-full animate-fade-in">
                 <div>
-                  {/* Subtle top indicator */}
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-[#00714e] uppercase tracking-wider flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#00714e]" />
@@ -398,7 +410,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                     </span>
                   </div>
 
-                  {/* Clean Word & Meaning: Matching min-h-[64px] flex container */}
                   <div className="mt-4 text-center min-h-[64px] flex flex-col justify-center">
                     <div className="inline-flex items-center justify-center gap-2">
                       <h2
@@ -438,7 +449,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                     </p>
                   </div>
 
-                  {/* Middle Box: VOLLEDIGE ZIN (Selectable) */}
                   <div className="mt-4 p-4 rounded-xl bg-[#f4f2fd] border border-[#eeedf7]/80 text-center min-h-[92px] flex flex-col justify-center relative group">
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <p className="text-[11px] font-bold text-[#554336] uppercase tracking-wider">
@@ -475,7 +485,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                   </div>
                 </div>
 
-                {/* Bottom: Interval na succes */}
                 <div className="flex items-center justify-center gap-1.5 pt-2 text-center">
                   <Icon name="schedule" size={16} className="text-[#00714e]" />
                   <span className="text-xs font-semibold text-[#00714e]">
@@ -491,7 +500,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
       {/* Response Actions Area */}
       <div className="w-full mt-3 min-h-[82px] flex flex-col justify-start">
         {!isFlipped ? (
-          /* Front Action: Single Reveal Button */
           <div className="w-full">
             <button
               onClick={handleRevealAnswer}
@@ -503,9 +511,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
             <div className="h-5" />
           </div>
         ) : (
-          /* Back Actions: Revealed only after flipping */
           <div className="grid grid-cols-2 gap-3 animate-fade-in">
-            {/* Nog Niet Action */}
             <div className="flex flex-col items-center">
               <button
                 onClick={() => handleSwipeOut('left')}
@@ -520,7 +526,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
               </span>
             </div>
 
-            {/* Ken Ik Action */}
             <div className="flex flex-col items-center">
               <button
                 onClick={() => handleSwipeOut('right')}
@@ -538,7 +543,6 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         )}
       </div>
 
-      {/* Subtle Keyboard & Accessibility Helper */}
       <div className="keyboard-shortcuts flex items-center justify-center gap-4 mt-4 text-[#554336] text-[11px] font-medium">
         <span className="flex items-center gap-1">
           <kbd className="bg-[#eeedf7] px-1.5 py-0.5 rounded text-[#1a1b22] font-semibold font-mono text-[10px]">
