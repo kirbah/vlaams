@@ -1,5 +1,15 @@
+/**
+ * src/utils/leitner.ts
+ *
+ * Spaced Repetition (Mini-Leitner) calculation engine, deck generators,
+ * and date scheduling helpers.
+ */
+
 import { WordCard, ProgressData, ParsedCard } from '../types'
 import { DEFAULT_WORDS } from '../data/defaultWords'
+
+// Re-export audio helpers so existing component imports remain fully compatible
+export * from './audio'
 
 export const PROGRESS_STORAGE_KEY = 'vlaams_progress'
 export const CUSTOM_WORDS_KEY = 'vlaams_custom_words'
@@ -13,13 +23,35 @@ export const INTERVALS: Record<number, number> = {
   3: 30, // Streak 3 -> 30 days (Streak 4 is Mastered)
 }
 
+/**
+ * Returns YYYY-MM-DD with a 4:00 AM cutoff.
+ * Before 04:00 AM, reviews count toward the previous calendar day.
+ */
 export function getTodayString(): string {
   const d = new Date()
+  d.setHours(d.getHours() - 4) // 4:00 AM boundary shift
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+
+/**
+ * Calculates a future due date aligned with the 4:00 AM study anchor.
+ */
+export function calculateNextDueDate(daysToAdd: number): string {
+  const d = new Date()
+  d.setHours(d.getHours() - 4) // Align with Leitner anchor
+  d.setDate(d.getDate() + daysToAdd)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               STORAGE HELPERS                              */
+/* -------------------------------------------------------------------------- */
 
 export function getDailyNewLimit(): number {
   try {
@@ -92,98 +124,70 @@ export function resetStoredWordsToDefault(): void {
   localStorage.removeItem(CUSTOM_WORDS_KEY)
 }
 
-/**
- * Single place to construct audio URLs for words and sentences.
- * Format: audio/${cleanKey}.opus
- * Decoupled, consistent slug generation.
- */
-export function getAudioUrl(
-  text: string,
-  type: 'word' | 'sentence' = 'word'
-): string {
-  // Strip parentheses/annotations like "De berg (-en)" -> "De berg"
-  const cleaned = text.replace(/\s*\([^)]*\)/g, '').trim()
-  const slug = cleaned
-    .toLowerCase()
-    .replace(/[/*_.,!?'"“”«»;:()]/g, ' ')
-    .trim()
-    .replace(/\s+/g, '_')
+/* -------------------------------------------------------------------------- */
+/*                           DECK FILTERING HELPERS                           */
+/* -------------------------------------------------------------------------- */
 
-  if (type === 'sentence') {
-    return `audio/sentence_${slug}.opus`
+/**
+ * Filter cards due today that have not yet reached mastery (streak < 4)
+ */
+export function getDueReviewCards(
+  allWords: WordCard[],
+  progressData: ProgressData,
+  today: string = getTodayString()
+): WordCard[] {
+  return allWords.filter((card) => {
+    const prog = progressData[card.word]
+    return prog && prog.streak < 4 && prog.nextDue <= today
+  })
+}
+
+/**
+ * Filter unstudied cards (Box 0 brand new)
+ */
+export function getBrandNewCards(
+  allWords: WordCard[],
+  progressData: ProgressData
+): WordCard[] {
+  return allWords.filter((card) => {
+    const prog = progressData[card.word]
+    return !prog || (prog.streak === 0 && !prog.lastReviewed)
+  })
+}
+
+/**
+ * Counts how many unreviewed Box 0 cards remain available
+ */
+export function getRemainingNewCardsCount(
+  allWords: WordCard[],
+  progressData: ProgressData
+): number {
+  return getBrandNewCards(allWords, progressData).length
+}
+
+/**
+ * Immutable Fisher-Yates array shuffle
+ */
+export function shuffleDeck<T>(items: readonly T[]): T[] {
+  const deck = [...items]
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[deck[i], deck[j]] = [deck[j], deck[i]]
   }
-  return `audio/${slug}.opus`
+  return deck
 }
 
-/**
- * Audio playback helper with SpeechSynthesis fallback.
- * Checks audio URL (opus) first, cleanly falls back to speech synthesis if audio file not found.
- */
-export async function playAudioTrack(
-  audioUrl: string,
-  textFallback: string,
-  speechLang: string = 'nl-BE'
-): Promise<void> {
-  try {
-    const audio = new Audio(audioUrl)
-    await audio.play()
-  } catch {
-    // Graceful fallback to browser speech synthesis
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(textFallback)
+/* -------------------------------------------------------------------------- */
+/*                           STUDY CARD PARSING                               */
+/* -------------------------------------------------------------------------- */
 
-      const voices = window.speechSynthesis.getVoices()
-      const beVoice = voices.find(
-        (v) => v.lang === 'nl-BE' || v.lang.startsWith('nl-BE')
-      )
-      const nlVoice = voices.find((v) => v.lang.startsWith('nl'))
-      if (beVoice) {
-        utterance.voice = beVoice
-      } else if (nlVoice) {
-        utterance.voice = nlVoice
-      }
-      utterance.lang = speechLang
-      utterance.rate = 0.95
-      window.speechSynthesis.speak(utterance)
-    }
-  }
-}
-
-/**
- * Play headword audio (pronounces the base word, e.g. "stinken" or "Enerzijds / anderzijds")
- */
-export async function playWordAudio(word: string): Promise<void> {
-  const cleanWordForSpeech = word.replace(/\s*\([^)]*\)/g, '').trim()
-  const url = getAudioUrl(word, 'word')
-  await playAudioTrack(url, cleanWordForSpeech)
-}
-
-/**
- * Play full sentence audio (pronounces full sentence, e.g. "De vuilnisbak stinkt.")
- */
-export async function playSentenceAudio(sentence: string): Promise<void> {
-  const cleanSentence = sentence.replace(/\*/g, '').trim()
-  const url = getAudioUrl(cleanSentence, 'sentence')
-  await playAudioTrack(url, cleanSentence)
-}
-
-// Deprecated alias for backwards compatibility
-export const playAudio = playWordAudio
-
-/**
- * Parses 3-field compact JSON into displayed components.
- * Handles multiple cloze markers (e.g. *enerzijds* ... *anderzijds*).
- */
 export function parseCard(card: WordCard, currentStreak = 0): ParsedCard {
-  // Find all matches for *(.*?)*
   const matches = [...card.ex.matchAll(/\*(.*?)\*/g)].map((m) => m[1])
   const answerForm = matches.length > 0 ? matches.join(' / ') : card.word
-  // Replace ALL asterisks wrapped words with underscores
   const frontSentence = card.ex.replace(/\*(.*?)\*/g, '__________')
   const fullSentence = card.ex.replace(/\*/g, '')
 
-  let nextIntervalLabel
+  let nextIntervalLabel: string
   if (currentStreak === 0) nextIntervalLabel = '+1 dag'
   else if (currentStreak === 1) nextIntervalLabel = '+3 dagen'
   else if (currentStreak === 2) nextIntervalLabel = '+7 dagen'
@@ -202,10 +206,13 @@ export function parseCard(card: WordCard, currentStreak = 0): ParsedCard {
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                          SESSION INITIALIZATION                            */
+/* -------------------------------------------------------------------------- */
+
 /**
- * Deck Initialization & Fisher-Yates Shuffling with Daily Batching
- * Formula for daily queue:
- * Due Today = (All reviews due from Boxes 1-4) + (Max 15 new cards from Box 0).
+ * Builds the study queue:
+ * Due Today = (All reviews due from Boxes 1-3) + (New cards up to daily limit).
  */
 export function initDeck(
   allWords: WordCard[],
@@ -214,61 +221,22 @@ export function initDeck(
   newCardsLimit: number = getDailyNewLimit(),
   offsetNew = 0
 ): WordCard[] {
-  const today = getTodayString()
-
   if (mode === 'practice_all') {
-    const activeDeck = [...allWords]
-    for (let i = activeDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[activeDeck[i], activeDeck[j]] = [activeDeck[j], activeDeck[i]]
-    }
-    return activeDeck
+    return shuffleDeck(allWords)
   }
 
-  // All reviews due from Boxes 1-3 (streak >= 1, streak < 4, nextDue <= today)
-  // Plus any previously reviewed cards in streak 0 that are due today
-  const reviewsDue: WordCard[] = []
-  const brandNewCards: WordCard[] = []
+  const today = getTodayString()
+  const reviewsDue = getDueReviewCards(allWords, progressData, today)
+  const brandNewCards = getBrandNewCards(allWords, progressData)
 
-  for (const card of allWords) {
-    const prog = progressData[card.word]
-    if (!prog || (prog.streak === 0 && !prog.lastReviewed)) {
-      // Unseen card (Box 0 brand new)
-      brandNewCards.push(card)
-    } else if (prog.streak < 4 && prog.nextDue <= today) {
-      reviewsDue.push(card)
-    }
-  }
-
-  // Slice new cards according to batch limit & offset
   const selectedNew = brandNewCards.slice(offsetNew, offsetNew + newCardsLimit)
-  const activeDeck = [...reviewsDue, ...selectedNew]
-
-  // Fisher-Yates Shuffle
-  for (let i = activeDeck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[activeDeck[i], activeDeck[j]] = [activeDeck[j], activeDeck[i]]
-  }
-
-  return activeDeck
+  return shuffleDeck([...reviewsDue, ...selectedNew])
 }
 
-/**
- * Counts how many unreviewed Box 0 cards remain available
- */
-export function getRemainingNewCardsCount(
-  allWords: WordCard[],
-  progressData: ProgressData
-): number {
-  return allWords.filter((card) => {
-    const prog = progressData[card.word]
-    return !prog || (prog.streak === 0 && !prog.lastReviewed)
-  }).length
-}
+/* -------------------------------------------------------------------------- */
+/*                         ANSWER PROCESSING (LEITNER)                        */
+/* -------------------------------------------------------------------------- */
 
-/**
- * Review Evaluation (Mini-Leitner)
- */
 export function processAnswer(
   card: WordCard,
   isCorrect: boolean,
@@ -285,37 +253,32 @@ export function processAnswer(
   const newDeck = [...activeDeck]
 
   if (isCorrect) {
-    // Only increment streak once per calendar day
+    // Only advance streak once per calendar study day
     const isNewDay = current.lastReviewed !== today
     const nextStreak = isNewDay
       ? Math.min(current.streak + 1, 4)
       : current.streak
 
     const daysToAdd = INTERVALS[current.streak] || 1
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + daysToAdd)
-
-    const year = targetDate.getFullYear()
-    const month = String(targetDate.getMonth() + 1).padStart(2, '0')
-    const day = String(targetDate.getDate()).padStart(2, '0')
+    const nextDueDate = calculateNextDueDate(daysToAdd)
 
     newProgress[card.word] = {
       streak: nextStreak,
-      nextDue: `${year}-${month}-${day}`,
+      nextDue: nextDueDate,
       lastReviewed: today,
     }
 
-    // Remove from today's running session
+    // Done for today: remove from session
     newDeck.shift()
   } else {
-    // Failure: Reset streak
+    // Failure: reset streak to 0, review again today
     newProgress[card.word] = {
       streak: 0,
       nextDue: today,
       lastReviewed: today,
     }
 
-    // Move to end of current session queue to repeat today
+    // Place at the end of queue to repeat during current session
     const failedCard = newDeck.shift()
     if (failedCard) {
       newDeck.push(failedCard)
