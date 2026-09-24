@@ -46,11 +46,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
   const today = getTodayString()
 
-  // Leitner statistics calculation
   let masteredCount = 0
   let dueReviewsCount = 0
   let unstudiedNewCount = 0
-  const boxCounts = [0, 0, 0, 0, 0] // 0: streak 0, 1: streak 1, 2: streak 2, 3: streak 3, 4: mastered
+  const boxCounts = [0, 0, 0, 0, 0]
 
   words.forEach((card) => {
     const item = progress[card.word]
@@ -129,7 +128,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     }
   }
 
-  // Helper to render sentence with bold target word(s) - supports multiple like *enerzijds* and *anderzijds*
   const renderSentenceWithBold = (sentence: string) => {
     const tokens = sentence.split(/(\*.*?\*)/g)
     return (
@@ -137,7 +135,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         {tokens.map((token, idx) => {
           if (token.startsWith('*') && token.endsWith('*')) {
             return (
-              <strong key={idx} className="text-[#8d4b00] font-bold">
+              <strong key={idx} className="text-brand-text font-bold">
                 {token.slice(1, -1)}
               </strong>
             )
@@ -150,33 +148,33 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#ffffff] w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-2xl flex flex-col shadow-2xl border border-[#eeedf7] overflow-hidden">
+      <div className="bg-card w-full sm:max-w-lg max-h-[88vh] rounded-t-3xl sm:rounded-2xl flex flex-col shadow-2xl border border-border-subtle overflow-hidden transition-colors">
         {/* Modal Header */}
-        <div className="p-4 px-6 border-b border-[#eeedf7] flex items-center justify-between">
+        <div className="p-4 px-6 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#1a1b22]">
+            <h2 className="text-lg font-bold text-main">
               Vlaams Woordenboek & Voortgang
             </h2>
-            <p className="text-xs text-[#554336]">
+            <p className="text-xs text-muted">
               Woordenschat B1 (Leitner Systeem)
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#f4f2fd] hover:bg-[#eeedf7] flex items-center justify-center text-[#1a1b22] transition-colors"
+            className="w-9 h-9 rounded-full bg-subtle hover:bg-subtle-hover flex items-center justify-center text-main transition-colors"
           >
             <Icon name="close" size={20} />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[#eeedf7] px-6 bg-[#fbf8ff]">
+        <div className="flex border-b border-border-subtle px-6 bg-app">
           <button
             onClick={() => setActiveTab('stats')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors ${
               activeTab === 'stats'
-                ? 'border-[#8d4b00] text-[#8d4b00]'
-                : 'border-transparent text-[#554336] hover:text-[#1a1b22]'
+                ? 'border-brand-text text-brand-text'
+                : 'border-transparent text-muted hover:text-main'
             }`}
           >
             Overzicht & Dozen
@@ -185,8 +183,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             onClick={() => setActiveTab('dictionary')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors ${
               activeTab === 'dictionary'
-                ? 'border-[#8d4b00] text-[#8d4b00]'
-                : 'border-transparent text-[#554336] hover:text-[#1a1b22]'
+                ? 'border-brand-text text-brand-text'
+                : 'border-transparent text-muted hover:text-main'
             }`}
           >
             Woordenlijst ({words.length})
@@ -195,8 +193,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             onClick={() => setActiveTab('import')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-colors ${
               activeTab === 'import'
-                ? 'border-[#8d4b00] text-[#8d4b00]'
-                : 'border-transparent text-[#554336] hover:text-[#1a1b22]'
+                ? 'border-brand-text text-brand-text'
+                : 'border-transparent text-muted hover:text-main'
             }`}
           >
             JSON Beheer
@@ -208,40 +206,40 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           {activeTab === 'stats' && (
             <div className="space-y-5">
               {/* Daily Habit Card */}
-              <div className="p-4 rounded-xl bg-[#f4f2fd] border border-[#eeedf7]">
-                <span className="text-[10px] uppercase font-bold text-[#554336] tracking-wider block">
+              <div className="p-4 rounded-xl bg-subtle border border-border-subtle">
+                <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
                   Dagelijkse Routine
                 </span>
                 <div className="grid grid-cols-3 gap-3 mt-3">
-                  <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
-                    <span className="text-xl font-extrabold text-[#1a1b22] block">
+                  <div className="p-2.5 rounded-lg bg-card border border-border-subtle text-center">
+                    <span className="text-xl font-extrabold text-main block">
                       {dueReviewsCount}
                     </span>
-                    <span className="text-[10px] text-[#554336] font-medium">
+                    <span className="text-[10px] text-muted font-medium">
                       Herhalingen
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
-                    <span className="text-xl font-extrabold text-[#8d4b00] block">
+                  <div className="p-2.5 rounded-lg bg-card border border-border-subtle text-center">
+                    <span className="text-xl font-extrabold text-brand-text block">
                       {Math.min(unstudiedNewCount, dailyLimit)}
                     </span>
-                    <span className="text-[10px] text-[#554336] font-medium">
+                    <span className="text-[10px] text-muted font-medium">
                       Nieuw Vandaag
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
-                    <span className="text-xl font-extrabold text-[#00714e] block">
+                  <div className="p-2.5 rounded-lg bg-card border border-border-subtle text-center">
+                    <span className="text-xl font-extrabold text-success-text block">
                       {masteredCount}
                     </span>
-                    <span className="text-[10px] text-[#554336] font-medium">
+                    <span className="text-[10px] text-muted font-medium">
                       Beheerst
                     </span>
                   </div>
                 </div>
 
                 {/* Batch Size Selector */}
-                <div className="mt-4 pt-3 border-t border-[#eeedf7] flex items-center justify-between">
-                  <span className="text-xs text-[#554336] font-medium">
+                <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between">
+                  <span className="text-xs text-muted font-medium">
                     Nieuwe woorden per sessie:
                   </span>
                   <div className="flex gap-1.5">
@@ -251,8 +249,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                         onClick={() => handleLimitSelect(n)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                           dailyLimit === n
-                            ? 'bg-[#8d4b00] text-white shadow-xs'
-                            : 'bg-white text-[#554336] hover:bg-[#eeedf7] border border-[#eeedf7]'
+                            ? 'bg-brand text-brand-contrast shadow-xs'
+                            : 'bg-card text-muted hover:bg-subtle border border-border-subtle'
                         }`}
                       >
                         {n}
@@ -264,47 +262,47 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
               {/* Leitner Box Breakdown */}
               <div>
-                <h4 className="font-bold text-[#1a1b22] text-sm mb-2">
+                <h4 className="font-bold text-main text-sm mb-2">
                   Leitner Dozen Verdeling
                 </h4>
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle">
+                    <span className="font-semibold text-main">
                       Doos 0 (Nieuw / Vandaag gemist)
                     </span>
-                    <span className="font-bold text-[#1a1b22]">
+                    <span className="font-bold text-main">
                       {boxCounts[0]} woorden
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle">
+                    <span className="font-semibold text-main">
                       Doos 1 (+1 dag interval)
                     </span>
-                    <span className="font-bold text-[#1a1b22]">
+                    <span className="font-bold text-main">
                       {boxCounts[1]} woorden
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle">
+                    <span className="font-semibold text-main">
                       Doos 2 (+3 dagen interval)
                     </span>
-                    <span className="font-bold text-[#1a1b22]">
+                    <span className="font-bold text-main">
                       {boxCounts[2]} woorden
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle">
+                    <span className="font-semibold text-main">
                       Doos 3 (+7 dagen interval)
                     </span>
-                    <span className="font-bold text-[#1a1b22]">
+                    <span className="font-bold text-main">
                       {boxCounts[3]} woorden
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#82f5c1]/20">
-                    <span className="font-semibold text-[#00714e]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-success-container/30">
+                    <span className="font-semibold text-success-text">
                       Doos 4 (+30 dagen / Beheerst 🎉)
                     </span>
-                    <span className="font-bold text-[#00714e]">
+                    <span className="font-bold text-success-text">
                       {boxCounts[4]} woorden
                     </span>
                   </div>
@@ -312,10 +310,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 border-t border-[#eeedf7]">
+              <div className="pt-2 border-t border-border-subtle">
                 <button
                   onClick={onWipeProgress}
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#ffdad6] text-[#93000a] text-xs font-bold hover:bg-[#ffcdc7] transition-colors text-center"
+                  className="w-full py-2.5 px-4 rounded-xl bg-danger-container text-danger-text text-xs font-bold hover:bg-danger-hover transition-colors text-center"
                 >
                   Wis alle voortgang & begin opnieuw
                 </button>
@@ -327,7 +325,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             <div className="space-y-4">
               {/* Search Bar */}
               <div className="relative">
-                <div className="absolute left-3 top-2.5 text-[#554336] pointer-events-none">
+                <div className="absolute left-3 top-2.5 text-muted pointer-events-none">
                   <Icon name="search" size={18} />
                 </div>
                 <input
@@ -335,14 +333,14 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                   placeholder="Zoek woord, betekenis of zin..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#f4f2fd] border border-[#eeedf7] text-xs text-[#1a1b22] placeholder-[#554336] focus:outline-none focus:border-[#8d4b00]"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-subtle border border-border-subtle text-xs text-main placeholder-muted focus:outline-none focus:border-border-accent"
                 />
               </div>
 
               {/* Word List with Bold Targets */}
               <div className="space-y-2.5 max-h-[48vh] overflow-y-auto pr-1">
                 {filteredWords.length === 0 ? (
-                  <p className="text-center py-6 text-xs text-[#554336]">
+                  <p className="text-center py-6 text-xs text-muted">
                     Geen woorden gevonden.
                   </p>
                 ) : (
@@ -356,31 +354,31 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                     return (
                       <div
                         key={item.word}
-                        className="p-3 rounded-xl bg-[#fbf8ff] border border-[#eeedf7] hover:border-[#dbc2b0] transition-colors flex items-start justify-between gap-2"
+                        className="p-3 rounded-xl bg-card border border-border-subtle hover:border-border-accent transition-colors flex items-start justify-between gap-2"
                       >
                         <div className="space-y-1 flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-[#1a1b22] tracking-tight">
+                            <span className="text-sm font-bold text-main tracking-tight">
                               {item.word}
                             </span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#eeedf7] text-[#554336]">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-subtle text-muted">
                               Doos {streak}
                             </span>
                             {streak >= 4 && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#82f5c1] text-[#00714e]">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success-container text-success-text">
                                 Beheerst
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-[#8d4b00] font-medium">
+                          <p className="text-xs text-brand-text font-medium">
                             {item.en}
                           </p>
-                          <p className="text-xs text-[#554336] leading-relaxed">
+                          <p className="text-xs text-muted leading-relaxed">
                             {renderSentenceWithBold(item.ex)}
                           </p>
                         </div>
 
-                        {/* Dual audio buttons: Word audio and Sentence audio */}
+                        {/* Dual audio buttons */}
                         <div className="flex items-center gap-1.5 shrink-0 self-center">
                           <button
                             onClick={() => handlePlayWord(item.word)}
@@ -388,8 +386,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                             aria-label={`Beluister woord ${item.word}`}
                             className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
                               isWordPlaying
-                                ? 'bg-[#ffdcc3] text-[#2f1500] shadow-xs'
-                                : 'bg-[#eeedf7] hover:bg-[#e8e7f1] text-[#8d4b00]'
+                                ? 'bg-brand-subtle text-brand-subtle-text shadow-xs'
+                                : 'bg-subtle hover:bg-subtle-hover text-brand-text'
                             }`}
                           >
                             <Icon
@@ -406,8 +404,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                             aria-label={`Beluister voorbeeldzin voor ${item.word}`}
                             className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
                               isSentencePlaying
-                                ? 'bg-[#ffdcc3] text-[#2f1500] shadow-xs'
-                                : 'bg-[#eeedf7] hover:bg-[#e3e1ec] text-[#554336]'
+                                ? 'bg-brand-subtle text-brand-subtle-text shadow-xs'
+                                : 'bg-subtle hover:bg-subtle-hover text-muted'
                             }`}
                           >
                             <Icon
@@ -430,13 +428,13 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
           {activeTab === 'import' && (
             <div className="space-y-4">
-              <p className="text-xs text-[#554336] leading-relaxed">
+              <p className="text-xs text-muted leading-relaxed">
                 Plak hieronder je eigen 3-veld JSON woordenlijst (bijv. voor
                 verdere B1 hoofdstukken). Elk item moet exact de velden{' '}
-                <code className="bg-[#eeedf7] px-1 rounded">word</code>,{' '}
-                <code className="bg-[#eeedf7] px-1 rounded">en</code>, en{' '}
-                <code className="bg-[#eeedf7] px-1 rounded">ex</code> (met{' '}
-                <code className="bg-[#eeedf7] px-1 rounded">*doelwoord*</code>)
+                <code className="bg-subtle px-1 rounded">word</code>,{' '}
+                <code className="bg-subtle px-1 rounded">en</code>, en{' '}
+                <code className="bg-subtle px-1 rounded">ex</code> (met{' '}
+                <code className="bg-subtle px-1 rounded">*doelwoord*</code>)
                 bevatten.
               </p>
 
@@ -445,16 +443,16 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                 onChange={(e) => setJsonInput(e.target.value)}
                 placeholder={`[\n  {\n    "word": "aankondigen",\n    "en": "To announce",\n    "ex": "We zullen het nieuwe project morgen *aankondigen*."\n  }\n]`}
                 rows={8}
-                className="w-full p-3 font-mono text-xs rounded-xl bg-[#f4f2fd] border border-[#eeedf7] focus:outline-none focus:border-[#8d4b00] text-[#1a1b22]"
+                className="w-full p-3 font-mono text-xs rounded-xl bg-subtle border border-border-subtle focus:outline-none focus:border-border-accent text-main"
               />
 
               {importError && (
-                <div className="p-3 rounded-lg bg-[#ffdad6] text-[#93000a] text-xs font-semibold">
+                <div className="p-3 rounded-lg bg-danger-container text-danger-text text-xs font-semibold">
                   {importError}
                 </div>
               )}
               {importSuccess && (
-                <div className="p-3 rounded-lg bg-[#82f5c1] text-[#00714e] text-xs font-semibold">
+                <div className="p-3 rounded-lg bg-success-container text-success-text text-xs font-semibold">
                   {importSuccess}
                 </div>
               )}
@@ -463,13 +461,13 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                 <button
                   onClick={handleJsonSubmit}
                   disabled={!jsonInput.trim()}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-[#8d4b00] disabled:opacity-40 text-white text-xs font-bold shadow-sm hover:bg-[#6e3900] transition-colors"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-40 text-brand-contrast text-xs font-bold shadow-sm transition-colors"
                 >
                   Importeer Woorden
                 </button>
                 <button
                   onClick={onResetToDefault}
-                  className="py-2.5 px-4 rounded-xl bg-[#eeedf7] text-[#1a1b22] text-xs font-semibold hover:bg-[#e8e7f1] transition-colors"
+                  className="py-2.5 px-4 rounded-xl bg-subtle text-main text-xs font-semibold hover:bg-subtle-hover transition-colors"
                 >
                   Herstel Standaard B1
                 </button>

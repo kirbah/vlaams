@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useStudyDeck } from './hooks/useStudyDeck'
+import { useTheme } from './hooks/useTheme'
 import { Header } from './components/Header'
 import { FlashcardDeck } from './components/FlashcardDeck'
 import { CompletionView } from './components/CompletionView'
@@ -13,6 +14,7 @@ import { ResetConfirmModal } from './components/ResetConfirmModal'
 export default function App() {
   const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false)
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false)
+  const { isDark, toggleTheme } = useTheme()
 
   const {
     words,
@@ -59,8 +61,8 @@ export default function App() {
   }, [canUndo, undo, isStatsOpen, isResetConfirmOpen])
 
   return (
-    <div className="bg-[#fbf8ff] text-[#1a1b22] min-h-screen flex flex-col font-sans">
-      {/* Top Header with Multi-level Undo */}
+    <div className="bg-app text-main min-h-screen flex flex-col font-sans transition-colors duration-200">
+      {/* Top Header with Dark/Light Switch & Undo */}
       <Header
         title="Study"
         onOpenStats={() => setIsStatsOpen(true)}
@@ -68,6 +70,8 @@ export default function App() {
         onUndo={undo}
         canUndo={canUndo}
         undoCount={undoCount}
+        isDarkMode={isDark}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Viewport Container */}

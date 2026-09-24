@@ -1,34 +1,94 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-app: var(--bg-app);
+  --color-card: var(--bg-card);
+  --color-subtle: var(--bg-subtle);
+  --color-subtle-hover: var(--bg-subtle-hover);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-accent: var(--border-accent);
+  --color-main: var(--text-main);
+  --color-muted: var(--text-muted);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-text: var(--brand-text);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-brand-subtle-text: var(--brand-subtle-text);
+
+  --color-success: var(--success);
+  --color-success-container: var(--success-container);
+  --color-success-hover: var(--success-hover);
+  --color-success-text: var(--success-text);
+  --color-success-border: var(--success-border);
+
+  --color-danger: var(--danger);
+  --color-danger-container: var(--danger-container);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-text: var(--danger-text);
+  --color-danger-border: var(--danger-border);
+}
+
 @layer base {
   :root {
-    --surface: #fbf8ff;
-    --surface-dim: #dad9e3;
-    --surface-bright: #fbf8ff;
-    --surface-container-lowest: #ffffff;
-    --surface-container-low: #f4f2fd;
-    --surface-container: #eeedf7;
-    --surface-container-high: #e8e7f1;
-    --surface-container-highest: #e3e1ec;
-    --on-surface: #1a1b22;
-    --on-surface-variant: #554336;
-    --inverse-surface: #2f3038;
-    --inverse-on-surface: #f1effa;
-    --outline: #887364;
-    --outline-variant: #dbc2b0;
-    --primary: #8d4b00;
-    --on-primary: #ffffff;
-    --primary-container: #b15f00;
-    --on-primary-container: #fffbff;
-    --primary-fixed: #ffdcc3;
-    --on-primary-fixed: #2f1500;
-    --secondary: #006c4a;
-    --on-secondary: #ffffff;
-    --secondary-container: #82f5c1;
-    --on-secondary-container: #00714e;
-    --error: #ba1a1a;
-    --error-container: #ffdad6;
-    --on-error-container: #93000a;
+    --bg-app: #fbf8ff;
+    --bg-card: #ffffff;
+    --bg-subtle: #f4f2fd;
+    --bg-subtle-hover: #eeedf7;
+    --border-subtle: #eeedf7;
+    --border-accent: #dbc2b0;
+    --text-main: #1a1b22;
+    --text-muted: #554336;
+
+    --brand: #8d4b00;
+    --brand-hover: #6e3900;
+    --brand-text: #8d4b00;
+    --brand-contrast: #ffffff;
+    --brand-subtle: #ffdcc3;
+    --brand-subtle-text: #2f1500;
+
+    --success: #00714e;
+    --success-container: #82f5c1;
+    --success-hover: #70efb6;
+    --success-text: #00714e;
+    --success-border: #70efb6;
+
+    --danger: #ba1a1a;
+    --danger-container: #ffdad6;
+    --danger-hover: #ffcdc7;
+    --danger-text: #93000a;
+    --danger-border: #ffcdc7;
+  }
+
+  :root.dark {
+    --bg-app: #0f1015;
+    --bg-card: #1c1d27;
+    --bg-subtle: #232430;
+    --bg-subtle-hover: #2a2b36;
+    --border-subtle: #2a2b36;
+    --border-accent: #49454f;
+    --text-main: #f1effa;
+    --text-muted: #c4b5a5;
+
+    --brand: #b15f00;
+    --brand-hover: #cf7100;
+    --brand-text: #ffb77d;
+    --brand-contrast: #ffffff;
+    --brand-subtle: #442200;
+    --brand-subtle-text: #ffdcc3;
+
+    --success: #82f5c1;
+    --success-container: #003825;
+    --success-hover: #004d33;
+    --success-text: #82f5c1;
+    --success-border: #006c4a;
+
+    --danger: #ffb4ab;
+    --danger-container: #3e0b0e;
+    --danger-hover: #541216;
+    --danger-text: #ffb4ab;
+    --danger-border: #80141b;
   }
 
   body {
@@ -40,8 +100,8 @@
       'Segoe UI',
       Roboto,
       sans-serif;
-    background-color: var(--surface);
-    color: var(--on-surface);
+    background-color: var(--bg-app);
+    color: var(--text-main);
     margin: 0;
     padding: 0;
     overscroll-behavior-y: none;
