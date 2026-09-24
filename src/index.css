@@ -50,7 +50,6 @@
   }
 }
 
-/* Hide desktop keyboard shortcuts on mobile/touch devices */
 @media (pointer: coarse) {
   .keyboard-shortcuts {
     display: none !important;
