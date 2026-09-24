@@ -1,0 +1,72 @@
+version: 2
+updates:
+  # 1. Maintain dependencies for GitHub Actions workflows
+  # This keeps your CI/CD process secure and up-to-date.
+  - package-ecosystem: 'github-actions'
+    directory: '/' # Checks for workflows in the .github/workflows directory
+    schedule:
+      interval: 'weekly' # A good balance between staying current and avoiding noise
+    labels:
+      - 'ci'
+      - 'dependabot'
+    commit-message:
+      prefix: 'chore(actions)' # Uses conventional commit style
+
+  # 2. Maintain dependencies for npm (your React application)
+  - package-ecosystem: 'npm'
+    directory: '/' # Location of package.json
+    schedule:
+      interval: 'weekly'
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'chore(deps)'
+
+    # Proactively ignore updates that are known to be breaking and require manual work.
+    # This prevents noise from PRs that will likely fail CI.
+    ignore:
+      # Major versions of React are never a simple bump. This should be a manual process.
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major']
+      # Major versions of Vite often come with migration guides and should be done carefully.
+      - dependency-name: 'vite'
+        update-types: ['version-update:semver-major']
+      # Major versions of ESLint/Prettier often introduce new rules that will break your build.
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'prettier'
+        update-types: ['version-update:semver-major']
+      # Your excellent rule for Node types remains.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+    # Group related packages together to reduce the number of individual PRs.
+    # This is a major quality-of-life improvement.
+    groups:
+      # Group all testing library updates into a single PR
+      testing-libraries:
+        patterns:
+          - '@testing-library/*'
+          - 'vitest'
+          - 'jsdom'
+      # Group all ESLint related packages
+      eslint-tooling:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@typescript-eslint/*'
+      # Group Vite and its related plugins
+      vite-tooling:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+      # Group React and its type definitions
+      react-stack:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
