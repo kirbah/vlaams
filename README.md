@@ -1,10 +1,12 @@
-# Use this app
+# Vlaams Woorden 🇧🇪
+
+Mobile-first flashcards for mastering Flemish Dutch (B1) vocabulary and verbs in context with active recall (cloze), Mini-Leitner spaced repetition, and audio playback.
+
+👉 **Live App:** [https://kirbah.github.io/vlaams/](https://kirbah.github.io/vlaams/)
 
 ## Run Locally
 
-**Prerequisites:** Node.js
-
-1. Install dependencies:
-   `npm install`
-2. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev
+```
