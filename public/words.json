@@ -1,0 +1,652 @@
+[
+  {
+    "word": "aankondigen",
+    "en": "To announce",
+    "ex": "We zullen het nieuwe project morgen *aankondigen*."
+  },
+  {
+    "word": "beschadigen",
+    "en": "To damage",
+    "ex": "De storm heeft veel huizen *beschadigd*."
+  },
+  {
+    "word": "bewaren",
+    "en": "To keep / save / store",
+    "ex": "Je moet deze documenten *bewaren*."
+  },
+  {
+    "word": "herstellen",
+    "en": "To repair",
+    "ex": "Ik moet de lamp *herstellen*."
+  },
+  {
+    "word": "inrichten",
+    "en": "To organize/furnish/decorate",
+    "ex": "We gaan ons huis modern *inrichten*."
+  },
+  {
+    "word": "invullen",
+    "en": "To fill in",
+    "ex": "Je moet dit formulier *invullen*."
+  },
+  {
+    "word": "ontdekken",
+    "en": "To discover",
+    "ex": "De wetenschappers hebben een nieuwe planeet *ontdekt*."
+  },
+  {
+    "word": "oplossen",
+    "en": "To solve",
+    "ex": "We moeten dit probleem *oplossen*."
+  },
+  {
+    "word": "opsturen",
+    "en": "To send/mail/ship",
+    "ex": "Ik moet de brief *opsturen*."
+  },
+  {
+    "word": "opzeggen",
+    "en": "To cancel",
+    "ex": "Ik wil mijn abonnement *opzeggen*."
+  },
+  {
+    "word": "proeven",
+    "en": "To taste",
+    "ex": "Mag ik eens *proeven*?"
+  },
+  {
+    "word": "redden",
+    "en": "To save/rescue",
+    "ex": "De brandweerman *redt* de jongen."
+  },
+  {
+    "word": "samenkomen",
+    "en": "To come together",
+    "ex": "We *komen* elke vrijdag *samen*."
+  },
+  {
+    "word": "scheiden",
+    "en": "To divorce",
+    "ex": "Ze gaan na tien jaar *scheiden*."
+  },
+  {
+    "word": "schreeuwen",
+    "en": "To scream",
+    "ex": "Ze *schreeuwt* omdat ze bang is."
+  },
+  {
+    "word": "steunen",
+    "en": "To support",
+    "ex": "We moeten elkaar *steunen*."
+  },
+  {
+    "word": "stemmen",
+    "en": "To vote",
+    "ex": "Op welke partij zal jij dit jaar *stemmen*?"
+  },
+  {
+    "word": "stinken",
+    "en": "To smell bad/stink",
+    "ex": "De vuilnisbak *stinkt*."
+  },
+  {
+    "word": "teleurstellen",
+    "en": "To disappoint",
+    "ex": "Ik moet je *teleurstellen*. Ik kan niet komen."
+  },
+  {
+    "word": "terugvragen",
+    "en": "To reclaim",
+    "ex": "Ik moet mijn borg nog *terugvragen*."
+  },
+  {
+    "word": "uitbreiden",
+    "en": "To expand",
+    "ex": "We gaan onze activiteiten *uitbreiden*."
+  },
+  {
+    "word": "varen",
+    "en": "To sail/navigate",
+    "ex": "Ik wil graag leren *varen*."
+  },
+  {
+    "word": "verdienen",
+    "en": "To deserve/earn",
+    "ex": "Ze *verdienen* ons respect."
+  },
+  {
+    "word": "verdwijnen",
+    "en": "To disappear",
+    "ex": "De zon *verdwijnt* achter de wolken."
+  },
+  {
+    "word": "verzamelen",
+    "en": "To collect",
+    "ex": "Hij *verzamelt* al 40 jaar lang stripboeken."
+  },
+  {
+    "word": "weggooien",
+    "en": "To throw away",
+    "ex": "Kan ik deze lege fles ergens *weggooien*?"
+  },
+  {
+    "word": "De berg (-en)",
+    "en": "The mountain",
+    "ex": "De *berg* is 4000 meter hoog."
+  },
+  {
+    "word": "De bril (-len)",
+    "en": "The glasses",
+    "ex": "Ik heb een nieuwe *bril* nodig."
+  },
+  {
+    "word": "Het buurland (-en)",
+    "en": "The neighboring country",
+    "ex": "België is een *buurland* van Nederland."
+  },
+  {
+    "word": "De bushalte (-s)",
+    "en": "The bus stop",
+    "ex": "Er is een nieuwe *bushalte* in mijn dorp."
+  },
+  {
+    "word": "De dader (-s)",
+    "en": "The perpetrator/culprit",
+    "ex": "De *dader* is op de vlucht."
+  },
+  {
+    "word": "De geur (-en)",
+    "en": "The smell",
+    "ex": "Ik hou van deze *geur*."
+  },
+  {
+    "word": "De gewoonte (-s/-n)",
+    "en": "The habit",
+    "ex": "Het is een slechte *gewoonte*."
+  },
+  {
+    "word": "De haven (-s)",
+    "en": "The harbour/port",
+    "ex": "Rotterdam heeft een *haven*."
+  },
+  {
+    "word": "De herinnering (-en)",
+    "en": "The memory",
+    "ex": "Dat is een mooie *herinnering*."
+  },
+  {
+    "word": "De inwoner (-s)",
+    "en": "The resident",
+    "ex": "Er is een informatieavond voor nieuwe *inwoners*."
+  },
+  {
+    "word": "Het kruispunt (-en)",
+    "en": "The intersection",
+    "ex": "Dit is een gevaarlijk *kruispunt*."
+  },
+  {
+    "word": "De oorlog (-en)",
+    "en": "The war",
+    "ex": "De *oorlog* moet stoppen."
+  },
+  {
+    "word": "De oppervlakte (-s)",
+    "en": "The surface/acreage",
+    "ex": "Het park heeft een *oppervlakte* van 80 hectare."
+  },
+  {
+    "word": "De reden (-en)",
+    "en": "The reason",
+    "ex": "Dat is een goede *reden*."
+  },
+  {
+    "word": "De roddel (-s)",
+    "en": "The gossip/rumor",
+    "ex": "Volgens mij is dat een *roddel*."
+  },
+  {
+    "word": "De regel (-s)",
+    "en": "The rule",
+    "ex": "We moeten de *regels* respecteren."
+  },
+  {
+    "word": "De rugzak (-ken)",
+    "en": "The backpack",
+    "ex": "De *rugzak* is veel te zwaar."
+  },
+  {
+    "word": "De schaar (de scharen)",
+    "en": "The scissors",
+    "ex": "Ze knipt haar haar met een *schaar*."
+  },
+  {
+    "word": "De schade (-s)",
+    "en": "The damage",
+    "ex": "De storm veroorzaakte veel *schade*."
+  },
+  {
+    "word": "De schaduw (-en)",
+    "en": "The shade/shadow",
+    "ex": "We zoeken een plekje in de *schaduw*."
+  },
+  {
+    "word": "De snelheid (de snelheden)",
+    "en": "The speed",
+    "ex": "De maximale *snelheid* is 70km/u."
+  },
+  {
+    "word": "De storing (-en)",
+    "en": "The malfunction/interference",
+    "ex": "Er is een wereldwijde computer*storing*."
+  },
+  {
+    "word": "Het stopcontact (-en)",
+    "en": "The socket/outlet",
+    "ex": "Dit *stopcontact* werkt niet."
+  },
+  {
+    "word": "De tong (-en)",
+    "en": "The tongue",
+    "ex": "Ik heb mijn *tong* verbrand."
+  },
+  {
+    "word": "De vacature (-s)",
+    "en": "The vacancy",
+    "ex": "Op LinkedIn kan je veel *vacatures* vinden."
+  },
+  {
+    "word": "Het wachtwoord (-en)",
+    "en": "The password",
+    "ex": "Ik ben mijn *wachtwoord* vergeten."
+  },
+  {
+    "word": "Actueel (actuele)",
+    "en": "Current",
+    "ex": "Dit is geen *actueel* nieuws."
+  },
+  {
+    "word": "Afhankelijk (-e)",
+    "en": "Dependent",
+    "ex": "Kinderen zijn *afhankelijk* van hun ouders."
+  },
+  {
+    "word": "Arm (-e)",
+    "en": "Poor",
+    "ex": "Het aantal *arme* mensen neemt toe."
+  },
+  {
+    "word": "Beschikbaar (beschikbare)",
+    "en": "Available",
+    "ex": "Er zijn geen kamers *beschikbaar*."
+  },
+  {
+    "word": "Bereikbaar (bereikbare)",
+    "en": "Reachable",
+    "ex": "Ze is nooit *bereikbaar*."
+  },
+  {
+    "word": "Beroemd (-e)",
+    "en": "Famous",
+    "ex": "Ze is een *beroemde* actrice."
+  },
+  {
+    "word": "Dichtbevolkt (-e)",
+    "en": "Densely populated",
+    "ex": "Tokyo is *dichtbevolkt*."
+  },
+  {
+    "word": "Draadloos (draadloze)",
+    "en": "Wireless",
+    "ex": "Mijn nieuwe koptelefoon is *draadloos*."
+  },
+  {
+    "word": "Huidig (-e)",
+    "en": "Current",
+    "ex": "De *huidige* situatie is verschrikkelijk."
+  },
+  {
+    "word": "Jaarlijks (-e)",
+    "en": "Annual",
+    "ex": "Pukkelpop is een *jaarlijks* festival."
+  },
+  {
+    "word": "Jaloers (-e)",
+    "en": "Jealous",
+    "ex": "Hij is nooit *jaloers*."
+  },
+  {
+    "word": "Logisch (-e)",
+    "en": "Logical",
+    "ex": "Het is een *logisch* gevolg."
+  },
+  {
+    "word": "Ongeduldig (-e)",
+    "en": "Impatient",
+    "ex": "Het kind werd *ongeduldig*."
+  },
+  {
+    "word": "Onmogelijk (-e)",
+    "en": "Impossible",
+    "ex": "Dit is een *onmogelijke* taak."
+  },
+  {
+    "word": "Onrustig (-e)",
+    "en": "Restless",
+    "ex": "De hond was *onrustig* tijdens de storm."
+  },
+  {
+    "word": "Prachtig (-e)",
+    "en": "Beautiful/wonderful/gorgeous",
+    "ex": "De zonsondergang was *prachtig*."
+  },
+  {
+    "word": "Raar (rare)",
+    "en": "Strange",
+    "ex": "Ik had een *raar* gevoel."
+  },
+  {
+    "word": "Rijk (-e)",
+    "en": "Rich",
+    "ex": "Hij werd *rijk* na de verkoop van zijn bedrijf."
+  },
+  {
+    "word": "Rijp (-e)",
+    "en": "Ripe",
+    "ex": "De banaan is nog niet *rijp*."
+  },
+  {
+    "word": "Schuldig (-e)",
+    "en": "Guilty",
+    "ex": "Hij voelde zich *schuldig* na het maken van die fout."
+  },
+  {
+    "word": "Tevreden",
+    "en": "Satisfied",
+    "ex": "De klant was erg *tevreden*."
+  },
+  {
+    "word": "Uitdagend (-e)",
+    "en": "Challenging",
+    "ex": "Het is een zeer *uitdagend* project."
+  },
+  {
+    "word": "Verantwoordelijk (-e)",
+    "en": "Responsible",
+    "ex": "Ik ben daar *verantwoordelijk* voor."
+  },
+  {
+    "word": "Vies (vieze)",
+    "en": "Dirty",
+    "ex": "De vloer was *vies* na het feestje."
+  },
+  {
+    "word": "Vrolijk (-e)",
+    "en": "Cheerful",
+    "ex": "Dit kindje is altijd *vrolijk*."
+  },
+  {
+    "word": "Werkloos (werkloze)",
+    "en": "Unemployed",
+    "ex": "Hij is sinds 2020 *werkloos*."
+  },
+  {
+    "word": "Aangesloten zijn bij",
+    "en": "To be affiliated with",
+    "ex": "Ik ben *aangesloten bij* de tennisclub."
+  },
+  {
+    "word": "Afscheid nemen van",
+    "en": "To say goodbye to",
+    "ex": "Ik neem *afscheid van* haar."
+  },
+  {
+    "word": "Benieuwd zijn naar",
+    "en": "To be curious about",
+    "ex": "Ik ben *benieuwd naar* je nieuwe appartement."
+  },
+  {
+    "word": "Bezuinigen op",
+    "en": "To cut back on",
+    "ex": "Ik moet *bezuinigen op* elektriciteit."
+  },
+  {
+    "word": "Boos worden op",
+    "en": "To get angry at",
+    "ex": "Ze *wordt boos op* haar broer."
+  },
+  {
+    "word": "Contact opnemen met",
+    "en": "To contact",
+    "ex": "Ik moet *contact opnemen met* mijn collega."
+  },
+  {
+    "word": "Dankbaar zijn voor",
+    "en": "To be grateful for",
+    "ex": "Ik ben *dankbaar voor* jouw hulp."
+  },
+  {
+    "word": "Deelnemen aan",
+    "en": "To participate in",
+    "ex": "Ik neem *deel aan* de wedstrijd."
+  },
+  {
+    "word": "Denken aan",
+    "en": "To think about",
+    "ex": "Ik *denk aan* jou."
+  },
+  {
+    "word": "Discussiëren over",
+    "en": "To discuss",
+    "ex": "Ik wil erover *discussiëren*."
+  },
+  {
+    "word": "Ervaring hebben in",
+    "en": "To have experience in",
+    "ex": "Hij heeft veel *ervaring in* die sector."
+  },
+  {
+    "word": "Feliciteren met",
+    "en": "To congratulate on",
+    "ex": "Ik wil je *feliciteren met* je nieuwe job."
+  },
+  {
+    "word": "Het eens zijn met",
+    "en": "To agree with",
+    "ex": "Ik ben *het eens met* je voorstel."
+  },
+  {
+    "word": "Indruk maken op",
+    "en": "To make an impression on",
+    "ex": "Ze maakte een grote *indruk op* het publiek."
+  },
+  {
+    "word": "Invloed hebben op",
+    "en": "To have influence on",
+    "ex": "De mentor heeft veel *invloed op* de studenten."
+  },
+  {
+    "word": "Kritiek hebben op",
+    "en": "To criticize",
+    "ex": "Hij had *kritiek op* de kwaliteit van het product."
+  },
+  {
+    "word": "Nadenken over",
+    "en": "Reflect on/think over",
+    "ex": "Ik moet nog *nadenken over* je voorstel."
+  },
+  {
+    "word": "Op de hoogte zijn van",
+    "en": "To be informed/aware",
+    "ex": "Hij wil overal van *op de hoogte zijn*."
+  },
+  {
+    "word": "Slagen voor",
+    "en": "To pass",
+    "ex": "Ik moet voor dit examen *slagen*."
+  },
+  {
+    "word": "Sparen voor",
+    "en": "To save for",
+    "ex": "Ik *spaar voor* een nieuwe laptop."
+  },
+  {
+    "word": "Slecht zijn in",
+    "en": "To be bad at",
+    "ex": "Ik ben *slecht in* wiskunde."
+  },
+  {
+    "word": "Verslaafd zijn aan",
+    "en": "To be addicted to",
+    "ex": "Hij is *verslaafd aan* chocolade."
+  },
+  {
+    "word": "Verlangen naar",
+    "en": "To long for",
+    "ex": "Ik *verlang naar* de zomervakantie."
+  },
+  {
+    "word": "Zich ergeren aan",
+    "en": "To be annoyed by",
+    "ex": "Ze *ergert zich aan* het lawaai."
+  },
+  {
+    "word": "Zich vervelen",
+    "en": "To be bored",
+    "ex": "De kinderen *vervelen zich*."
+  },
+  {
+    "word": "Zich voorbereiden op",
+    "en": "To prepare for",
+    "ex": "Charlotte heeft zich goed *voorbereid op* het examen."
+  },
+  {
+    "word": "Behalve",
+    "en": "Except",
+    "ex": "Ik eet alles *behalve* broccoli."
+  },
+  {
+    "word": "Binnenkort",
+    "en": "Soon",
+    "ex": "*Binnenkort* gaan we op vakantie."
+  },
+  {
+    "word": "Bovendien",
+    "en": "Moreover/in addition",
+    "ex": "Laura is gekwalificeerd en heeft *bovendien* ervaring."
+  },
+  {
+    "word": "Dankzij",
+    "en": "Thanks to",
+    "ex": "*Dankzij* zijn hulp konden we het project op tijd afronden."
+  },
+  {
+    "word": "Enerzijds / anderzijds",
+    "en": "On the one hand, on the other hand",
+    "ex": "Deze weg is *enerzijds* langer, maar *anderzijds* veiliger."
+  },
+  {
+    "word": "Nauwelijks",
+    "en": "Hardly/barely",
+    "ex": "In oktober heeft het *nauwelijks* geregend."
+  },
+  {
+    "word": "Oorspronkelijk",
+    "en": "Originally",
+    "ex": "*Oorspronkelijk* was deze deur blauw."
+  },
+  {
+    "word": "Rechtstreeks",
+    "en": "Directly",
+    "ex": "De trein gaat *rechtstreeks* naar Amsterdam."
+  },
+  {
+    "word": "Ruim",
+    "en": "Over/more than",
+    "ex": "Het project heeft *ruim* drie jaar geduurd."
+  },
+  {
+    "word": "Tijdelijk",
+    "en": "Temporary",
+    "ex": "Ze is *tijdelijk* gestopt."
+  },
+  {
+    "word": "Trouwens",
+    "en": "By the way/besides",
+    "ex": "Het is *trouwens* al veel te laat."
+  },
+  {
+    "word": "Tegenwoordig",
+    "en": "Nowadays",
+    "ex": "*Tegenwoordig* is alles duur."
+  },
+  {
+    "word": "Waarschijnlijk",
+    "en": "Probably",
+    "ex": "Hij komt *waarschijnlijk* morgen."
+  },
+  {
+    "word": "Alle begin is moeilijk.",
+    "en": "All beginnings are difficult",
+    "ex": "*Alle begin is moeilijk*, maar het wordt gemakkelijker."
+  },
+  {
+    "word": "Balen!",
+    "en": "That’s too bad/bummer",
+    "ex": "*Balen!* De wedstrijd is afgelast."
+  },
+  {
+    "word": "Beter laat dan nooit.",
+    "en": "Better late than never",
+    "ex": "Hij heeft het eindelijk ingediend. *Beter laat dan nooit*."
+  },
+  {
+    "word": "Dat klinkt goed.",
+    "en": "That sounds good",
+    "ex": "*Dat klinkt goed*, laten we het zo doen."
+  },
+  {
+    "word": "Dat klopt (niet).",
+    "en": "That’s (not) correct",
+    "ex": "Deze cijfers *kloppen niet*."
+  },
+  {
+    "word": "Dat komt door ...",
+    "en": "That’s due to",
+    "ex": "*Dat komt door* een storing."
+  },
+  {
+    "word": "Het is een goed teken.",
+    "en": "It’s a good sign",
+    "ex": "*Het is een goed teken* dat de eerste reacties positief zijn."
+  },
+  {
+    "word": "Ik ben zo benieuwd!",
+    "en": "I’m so curious",
+    "ex": "Volgende week is er een nieuwe aflevering. *Ik ben zo benieuwd!*"
+  },
+  {
+    "word": "Laten we hopen.",
+    "en": "Let’s hope",
+    "ex": "*Laten we hopen* dat het morgen mooi weer wordt."
+  },
+  {
+    "word": "Oefening baart kunst.",
+    "en": "Practice makes perfect",
+    "ex": "Blijf proberen! *Oefening baart kunst*."
+  },
+  {
+    "word": "Op je woorden letten.",
+    "en": "Watch your language",
+    "ex": "Mia, *let op je woorden*!"
+  },
+  {
+    "word": "Vergissen is menselijk.",
+    "en": "To err is human",
+    "ex": "Geen zorgen. *Vergissen is menselijk*."
+  },
+  {
+    "word": "Zoals je weet, ...",
+    "en": "As you know",
+    "ex": "*Zoals je weet*, verhuizen we."
+  }
+]

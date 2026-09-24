@@ -1,0 +1,6 @@
+{
+  "name": "Vlaams Woorden - B1 Werkwoorden",
+  "description": "Mobile-first flashcard app for mastering Flemish Dutch (Vlaams Nederlands) B1 verbs in context using active recall and Mini-Leitner spaced repetition.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
