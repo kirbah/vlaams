@@ -59,7 +59,7 @@ export default function App() {
 
   // Try to load /words.json on mount if custom words not in storage
   useEffect(() => {
-    fetch('/words.json')
+    fetch(`${import.meta.env.BASE_URL}words.json`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to load words.json')
         return res.json()
