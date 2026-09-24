@@ -1,20 +1,20 @@
-import React from 'react';
-import { Icon } from './Icon';
+import React from 'react'
+import { Icon } from './Icon'
 
 interface ResetConfirmModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onRestartSession: () => void;
-  onWipeAllProgress: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onRestartSession: () => void
+  onWipeAllProgress: () => void
 }
 
 export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
   isOpen,
   onClose,
   onRestartSession,
-  onWipeAllProgress
+  onWipeAllProgress,
 }) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
@@ -24,20 +24,25 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
             <Icon name="restart_alt" size={22} />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#1a1b22]">Sessie resetten?</h3>
-            <p className="text-xs text-[#554336]">Kies wat je wilt herstarten</p>
+            <h3 className="text-base font-bold text-[#1a1b22]">
+              Sessie resetten?
+            </h3>
+            <p className="text-xs text-[#554336]">
+              Kies wat je wilt herstarten
+            </p>
           </div>
         </div>
 
         <p className="text-sm text-[#554336] leading-relaxed">
-          Je kunt de huidige sessie opnieuw schudden, of al je behaalde Leitner-streaks en datums volledig wissen.
+          Je kunt de huidige sessie opnieuw schudden, of al je behaalde
+          Leitner-streaks en datums volledig wissen.
         </p>
 
         <div className="flex flex-col gap-2 pt-2">
           <button
             onClick={() => {
-              onRestartSession();
-              onClose();
+              onRestartSession()
+              onClose()
             }}
             className="w-full py-2.5 px-4 rounded-xl bg-[#eeedf7] hover:bg-[#e8e7f1] text-[#1a1b22] font-semibold text-sm transition-colors text-center"
           >
@@ -46,8 +51,8 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
 
           <button
             onClick={() => {
-              onWipeAllProgress();
-              onClose();
+              onWipeAllProgress()
+              onClose()
             }}
             className="w-full py-2.5 px-4 rounded-xl bg-[#ffdad6] hover:bg-[#ffcdc7] text-[#93000a] font-semibold text-sm transition-colors text-center"
           >
@@ -63,5 +68,5 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

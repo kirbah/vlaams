@@ -1,15 +1,15 @@
-import React from 'react';
-import { Icon } from './Icon';
+import React from 'react'
+import { Icon } from './Icon'
 
 interface CompletionViewProps {
-  reviewedCount: number;
-  totalWords: number;
-  masteredCount: number;
-  remainingNewCount: number;
-  dailyLimit: number;
-  onNextBatch: () => void;
-  onResetProgress: () => void;
-  onPracticeAll: () => void;
+  reviewedCount: number
+  totalWords: number
+  masteredCount: number
+  remainingNewCount: number
+  dailyLimit: number
+  onNextBatch: () => void
+  onResetProgress: () => void
+  onPracticeAll: () => void
 }
 
 export const CompletionView: React.FC<CompletionViewProps> = ({
@@ -20,9 +20,9 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
   dailyLimit,
   onNextBatch,
   onResetProgress,
-  onPracticeAll
+  onPracticeAll,
 }) => {
-  const nextBatchCount = Math.min(remainingNewCount, dailyLimit);
+  const nextBatchCount = Math.min(remainingNewCount, dailyLimit)
 
   return (
     <div className="w-full min-h-[420px] rounded-2xl bg-[#ffffff] p-8 flex flex-col items-center justify-center text-center shadow-md border border-[#eeedf7] animate-fade-in my-auto">
@@ -43,12 +43,20 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
       {/* Mini Progress Card */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-6 p-3 rounded-xl bg-[#f4f2fd] border border-[#eeedf7]">
         <div className="text-center">
-          <span className="text-[10px] uppercase font-bold text-[#554336] tracking-wider block">Sessie voltooid</span>
-          <span className="text-lg font-bold text-[#1a1b22]">{reviewedCount} woorden</span>
+          <span className="text-[10px] uppercase font-bold text-[#554336] tracking-wider block">
+            Sessie voltooid
+          </span>
+          <span className="text-lg font-bold text-[#1a1b22]">
+            {reviewedCount} woorden
+          </span>
         </div>
         <div className="text-center">
-          <span className="text-[10px] uppercase font-bold text-[#554336] tracking-wider block">Beheerst</span>
-          <span className="text-lg font-bold text-[#00714e]">{masteredCount} / {totalWords}</span>
+          <span className="text-[10px] uppercase font-bold text-[#554336] tracking-wider block">
+            Beheerst
+          </span>
+          <span className="text-lg font-bold text-[#00714e]">
+            {masteredCount} / {totalWords}
+          </span>
         </div>
       </div>
 
@@ -83,5 +91,5 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}

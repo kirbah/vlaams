@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { WordCard, ProgressData } from '../types';
-import { parseCard, playWordAudio, playSentenceAudio } from '../utils/leitner';
-import { Icon } from './Icon';
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { WordCard, ProgressData } from '../types'
+import { parseCard, playWordAudio, playSentenceAudio } from '../utils/leitner'
+import { Icon } from './Icon'
 
 interface FlashcardDeckProps {
-  card: WordCard;
-  progress: ProgressData;
-  dueCount: number;
-  remCount: number;
-  onAnswer: (isCorrect: boolean) => void;
+  card: WordCard
+  progress: ProgressData
+  dueCount: number
+  remCount: number
+  onAnswer: (isCorrect: boolean) => void
 }
 
 export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
@@ -16,244 +16,263 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   progress,
   dueCount,
   remCount,
-  onAnswer
+  onAnswer,
 }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [playingAudioType, setPlayingAudioType] = useState<'word' | 'sentence' | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [playingAudioType, setPlayingAudioType] = useState<
+    'word' | 'sentence' | null
+  >(null)
 
   // Drag physics state
-  const cardRef = useRef<HTMLDivElement>(null);
-  const stampRejectRef = useRef<HTMLDivElement>(null);
-  const stampAcceptRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null)
+  const stampRejectRef = useRef<HTMLDivElement>(null)
+  const stampAcceptRef = useRef<HTMLDivElement>(null)
   const dragInfo = useRef({
     isDragging: false,
     startX: 0,
-    currentX: 0
-  });
+    currentX: 0,
+  })
 
-  const cardProgress = progress[card.word];
-  const currentStreak = cardProgress ? cardProgress.streak : 0;
-  const parsed = parseCard(card, currentStreak);
+  const cardProgress = progress[card.word]
+  const currentStreak = cardProgress ? cardProgress.streak : 0
+  const parsed = parseCard(card, currentStreak)
 
   // Reset flip state when card changes
   useEffect(() => {
-    setIsFlipped(false);
+    setIsFlipped(false)
     if (cardRef.current) {
-      cardRef.current.style.transform = 'translateX(0px) rotate(0deg)';
-      cardRef.current.style.transition = 'none';
-      cardRef.current.style.opacity = '1';
+      cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
+      cardRef.current.style.transition = 'none'
+      cardRef.current.style.opacity = '1'
     }
-    if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0';
-    if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0';
-  }, [card.word]);
+    if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0'
+    if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0'
+  }, [card.word])
 
   const handlePlayWord = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setPlayingAudioType('word');
+    if (e) e.stopPropagation()
+    setPlayingAudioType('word')
     try {
-      await playWordAudio(card.word);
+      await playWordAudio(card.word)
     } finally {
-      setTimeout(() => setPlayingAudioType(prev => prev === 'word' ? null : prev), 700);
+      setTimeout(
+        () => setPlayingAudioType((prev) => (prev === 'word' ? null : prev)),
+        700
+      )
     }
-  };
+  }
 
   const handlePlaySentence = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setPlayingAudioType('sentence');
+    if (e) e.stopPropagation()
+    setPlayingAudioType('sentence')
     try {
-      await playSentenceAudio(card.ex);
+      await playSentenceAudio(card.ex)
     } finally {
-      setTimeout(() => setPlayingAudioType(prev => prev === 'sentence' ? null : prev), 1200);
+      setTimeout(
+        () =>
+          setPlayingAudioType((prev) => (prev === 'sentence' ? null : prev)),
+        1200
+      )
     }
-  };
+  }
 
   const handleFlip = useCallback(() => {
-    if (isAnimating) return;
-    setIsFlipped(prev => !prev);
-  }, [isAnimating]);
+    if (isAnimating) return
+    setIsFlipped((prev) => !prev)
+  }, [isAnimating])
 
   const handleRevealAnswer = () => {
     if (!isFlipped && !isAnimating) {
-      setIsFlipped(true);
+      setIsFlipped(true)
     }
-  };
+  }
 
   const handleSwipeOut = useCallback(
     (direction: 'left' | 'right') => {
       // High Priority Fix: Do not allow grading before reveal!
       if (!isFlipped) {
-        setIsFlipped(true);
-        return;
+        setIsFlipped(true)
+        return
       }
 
-      if (isAnimating) return;
-      setIsAnimating(true);
+      if (isAnimating) return
+      setIsAnimating(true)
 
-      const shiftX = direction === 'right' ? 450 : -450;
-      const rotate = direction === 'right' ? 18 : -18;
+      const shiftX = direction === 'right' ? 450 : -450
+      const rotate = direction === 'right' ? 18 : -18
 
       if (cardRef.current) {
-        cardRef.current.style.transition = 'transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.26s ease-out';
-        cardRef.current.style.transform = `translateX(${shiftX}px) rotate(${rotate}deg)`;
-        cardRef.current.style.opacity = '0';
+        cardRef.current.style.transition =
+          'transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.26s ease-out'
+        cardRef.current.style.transform = `translateX(${shiftX}px) rotate(${rotate}deg)`
+        cardRef.current.style.opacity = '0'
       }
 
       if (direction === 'right' && stampAcceptRef.current) {
-        stampAcceptRef.current.style.opacity = '1';
+        stampAcceptRef.current.style.opacity = '1'
       } else if (direction === 'left' && stampRejectRef.current) {
-        stampRejectRef.current.style.opacity = '1';
+        stampRejectRef.current.style.opacity = '1'
       }
 
       setTimeout(() => {
-        onAnswer(direction === 'right');
+        onAnswer(direction === 'right')
         if (cardRef.current) {
-          cardRef.current.style.transition = 'none';
-          cardRef.current.style.transform = 'translateX(0px) rotate(0deg)';
-          cardRef.current.style.opacity = '1';
+          cardRef.current.style.transition = 'none'
+          cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
+          cardRef.current.style.opacity = '1'
         }
-        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0';
-        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0';
-        setIsAnimating(false);
-      }, 260);
+        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0'
+        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0'
+        setIsAnimating(false)
+      }, 260)
     },
     [isFlipped, isAnimating, onAnswer]
-  );
+  )
 
   // Pointer / Touch gestures for swipe
   const onPointerDown = (e: React.PointerEvent) => {
-    if (isAnimating) return;
+    if (isAnimating) return
     // Don't drag if clicking audio button directly
-    if ((e.target as HTMLElement).closest('[data-audio-button]')) return;
+    if ((e.target as HTMLElement).closest('[data-audio-button]')) return
     // Don't initiate card drag if user is interacting with selectable text
-    if ((e.target as HTMLElement).closest('[data-selectable-text]')) return;
+    if ((e.target as HTMLElement).closest('[data-selectable-text]')) return
 
-    dragInfo.current.isDragging = true;
-    dragInfo.current.startX = e.clientX;
-    dragInfo.current.currentX = e.clientX;
+    dragInfo.current.isDragging = true
+    dragInfo.current.startX = e.clientX
+    dragInfo.current.currentX = e.clientX
 
     if (cardRef.current) {
-      cardRef.current.style.transition = 'none';
+      cardRef.current.style.transition = 'none'
     }
-  };
+  }
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragInfo.current.isDragging || isAnimating) return;
-    dragInfo.current.currentX = e.clientX;
-    const diffX = dragInfo.current.currentX - dragInfo.current.startX;
-    const rotate = diffX * 0.05;
+    if (!dragInfo.current.isDragging || isAnimating) return
+    dragInfo.current.currentX = e.clientX
+    const diffX = dragInfo.current.currentX - dragInfo.current.startX
+    const rotate = diffX * 0.05
 
     if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${diffX}px) rotate(${rotate}deg)`;
+      cardRef.current.style.transform = `translateX(${diffX}px) rotate(${rotate}deg)`
     }
 
     // Only show grading stamps if card is already revealed!
     if (isFlipped) {
       if (diffX > 20) {
-        const opacity = Math.min(1, (diffX - 20) / 70);
-        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = String(opacity);
-        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0';
+        const opacity = Math.min(1, (diffX - 20) / 70)
+        if (stampAcceptRef.current)
+          stampAcceptRef.current.style.opacity = String(opacity)
+        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0'
       } else if (diffX < -20) {
-        const opacity = Math.min(1, (-diffX - 20) / 70);
-        if (stampRejectRef.current) stampRejectRef.current.style.opacity = String(opacity);
-        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0';
+        const opacity = Math.min(1, (-diffX - 20) / 70)
+        if (stampRejectRef.current)
+          stampRejectRef.current.style.opacity = String(opacity)
+        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0'
       } else {
-        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0';
-        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0';
+        if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0'
+        if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0'
       }
     }
-  };
+  }
 
   const onPointerUp = (e: React.PointerEvent) => {
-    if (!dragInfo.current.isDragging || isAnimating) return;
-    dragInfo.current.isDragging = false;
-    const diffX = dragInfo.current.currentX - dragInfo.current.startX;
+    if (!dragInfo.current.isDragging || isAnimating) return
+    dragInfo.current.isDragging = false
+    const diffX = dragInfo.current.currentX - dragInfo.current.startX
 
     // Check if user currently has text selected (e.g. highlighted text)
-    const selection = window.getSelection ? window.getSelection()?.toString() : '';
-    const hasSelection = Boolean(selection && selection.trim().length > 0);
+    const selection = window.getSelection
+      ? window.getSelection()?.toString()
+      : ''
+    const hasSelection = Boolean(selection && selection.trim().length > 0)
 
     // If clicked on selectable text and did not swipe, do NOT flip the card
-    const isTargetSelectable = Boolean((e.target as HTMLElement)?.closest('[data-selectable-text]'));
+    const isTargetSelectable = Boolean(
+      (e.target as HTMLElement)?.closest('[data-selectable-text]')
+    )
 
     if (Math.abs(diffX) < 10) {
       // Tap detected -> flip card ONLY IF not interacting with selectable text or active selection
       if (!isTargetSelectable && !hasSelection) {
-        handleFlip();
+        handleFlip()
       }
     } else if (isFlipped && diffX > 80) {
-      handleSwipeOut('right');
+      handleSwipeOut('right')
     } else if (isFlipped && diffX < -80) {
-      handleSwipeOut('left');
+      handleSwipeOut('left')
     } else if (!isFlipped && Math.abs(diffX) > 40) {
       // Drag on front reveals answer
-      handleRevealAnswer();
+      handleRevealAnswer()
       if (cardRef.current) {
-        cardRef.current.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
-        cardRef.current.style.transform = 'translateX(0px) rotate(0deg)';
+        cardRef.current.style.transition =
+          'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+        cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
       }
     } else {
       // Snap back to center
       if (cardRef.current) {
-        cardRef.current.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
-        cardRef.current.style.transform = 'translateX(0px) rotate(0deg)';
+        cardRef.current.style.transition =
+          'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+        cardRef.current.style.transform = 'translateX(0px) rotate(0deg)'
       }
-      if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0';
-      if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0';
+      if (stampRejectRef.current) stampRejectRef.current.style.opacity = '0'
+      if (stampAcceptRef.current) stampAcceptRef.current.style.opacity = '0'
     }
-  };
+  }
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName))
+        return
 
       if (e.code === 'Space') {
-        e.preventDefault();
-        handleFlip();
+        e.preventDefault()
+        handleFlip()
       } else if (e.code === 'ArrowLeft') {
-        e.preventDefault();
+        e.preventDefault()
         if (isFlipped) {
-          handleSwipeOut('left');
+          handleSwipeOut('left')
         } else {
-          handleRevealAnswer();
+          handleRevealAnswer()
         }
       } else if (e.code === 'ArrowRight') {
-        e.preventDefault();
+        e.preventDefault()
         if (isFlipped) {
-          handleSwipeOut('right');
+          handleSwipeOut('right')
         } else {
-          handleRevealAnswer();
+          handleRevealAnswer()
         }
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleFlip, handleSwipeOut, isFlipped]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleFlip, handleSwipeOut, isFlipped])
 
   // Highlighted sentence formatting for back of card (supports multiple cloze markers like *enerzijds* and *anderzijds*)
   const renderHighlightedSentence = () => {
     // Regex match to preserve split delimiters
-    const tokens = card.ex.split(/(\*.*?\*)/g);
+    const tokens = card.ex.split(/(\*.*?\*)/g)
     return (
       <>
         &ldquo;
         {tokens.map((token, idx) => {
           if (token.startsWith('*') && token.endsWith('*')) {
-            const inner = token.slice(1, -1);
+            const inner = token.slice(1, -1)
             return (
               <strong key={idx} className="text-[#8d4b00] font-bold">
                 {inner}
               </strong>
-            );
+            )
           }
-          return <React.Fragment key={idx}>{token}</React.Fragment>;
+          return <React.Fragment key={idx}>{token}</React.Fragment>
         })}
         &rdquo;
       </>
-    );
-  };
+    )
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -266,11 +285,17 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
 
         <div className="flex items-center gap-2 bg-[#f4f2fd] px-3.5 py-1.5 rounded-full shadow-xs border border-[#eeedf7]">
           <span className="text-[11px] font-bold text-[#554336] uppercase tracking-wider">
-            Due: <strong className="text-[#1a1b22] text-xs font-extrabold">{dueCount}</strong>
+            Due:{' '}
+            <strong className="text-[#1a1b22] text-xs font-extrabold">
+              {dueCount}
+            </strong>
           </span>
           <span className="w-1 h-3 rounded-full bg-[#dbc2b0]" />
           <span className="text-[11px] font-bold text-[#554336] uppercase tracking-wider">
-            Rem: <strong className="text-[#8d4b00] text-xs font-extrabold">{remCount}</strong>
+            Rem:{' '}
+            <strong className="text-[#8d4b00] text-xs font-extrabold">
+              {remCount}
+            </strong>
           </span>
         </div>
       </div>
@@ -387,7 +412,14 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                             : 'bg-[#eeedf7] hover:bg-[#e8e7f1] text-[#8d4b00]'
                         }`}
                       >
-                        <Icon name={playingAudioType === 'word' ? 'graphic_eq' : 'volume_up'} size={19} />
+                        <Icon
+                          name={
+                            playingAudioType === 'word'
+                              ? 'graphic_eq'
+                              : 'volume_up'
+                          }
+                          size={19}
+                        />
                       </button>
                     </div>
 
@@ -417,7 +449,14 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
                             : 'bg-[#eeedf7] hover:bg-[#e3e1ec] text-[#8d4b00]'
                         }`}
                       >
-                        <Icon name={playingAudioType === 'sentence' ? 'graphic_eq' : 'volume_up'} size={15} />
+                        <Icon
+                          name={
+                            playingAudioType === 'sentence'
+                              ? 'graphic_eq'
+                              : 'volume_up'
+                          }
+                          size={15}
+                        />
                       </button>
                     </div>
                     <p
@@ -454,7 +493,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
               <Icon name="visibility" size={22} />
               <span>Toon antwoord</span>
             </button>
-            <div className="h-5" /> {/* Matches sublabel height of back buttons */}
+            <div className="h-5" />{' '}
+            {/* Matches sublabel height of back buttons */}
           </div>
         ) : (
           /* Back Actions: Revealed only after flipping */
@@ -514,5 +554,5 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         </span>
       </div>
     </div>
-  );
-};
+  )
+}

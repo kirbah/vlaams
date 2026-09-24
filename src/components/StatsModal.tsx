@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
-import { WordCard, ProgressData } from '../types';
-import { playWordAudio, playSentenceAudio, getTodayString, getDailyNewLimit, setDailyNewLimit } from '../utils/leitner';
-import { Icon } from './Icon';
+import React, { useState } from 'react'
+import { WordCard, ProgressData } from '../types'
+import {
+  playWordAudio,
+  playSentenceAudio,
+  getTodayString,
+  getDailyNewLimit,
+  setDailyNewLimit,
+} from '../utils/leitner'
+import { Icon } from './Icon'
 
 interface StatsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  words: WordCard[];
-  progress: ProgressData;
-  onImportWords: (newWords: WordCard[]) => void;
-  onResetToDefault: () => void;
-  onWipeProgress: () => void;
-  onDailyLimitChange?: (newLimit: number) => void;
+  isOpen: boolean
+  onClose: () => void
+  words: WordCard[]
+  progress: ProgressData
+  onImportWords: (newWords: WordCard[]) => void
+  onResetToDefault: () => void
+  onWipeProgress: () => void
+  onDailyLimitChange?: (newLimit: number) => void
 }
 
 export const StatsModal: React.FC<StatsModalProps> = ({
@@ -22,99 +28,109 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   onImportWords,
   onResetToDefault,
   onWipeProgress,
-  onDailyLimitChange
+  onDailyLimitChange,
 }) => {
-  const [activeTab, setActiveTab] = useState<'stats' | 'dictionary' | 'import'>('stats');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [jsonInput, setJsonInput] = useState('');
-  const [importError, setImportError] = useState<string | null>(null);
-  const [importSuccess, setImportSuccess] = useState<string | null>(null);
-  const [playingKey, setPlayingKey] = useState<string | null>(null);
-  const [dailyLimit, setLocalDailyLimit] = useState<number>(() => getDailyNewLimit());
+  const [activeTab, setActiveTab] = useState<'stats' | 'dictionary' | 'import'>(
+    'stats'
+  )
+  const [searchQuery, setSearchQuery] = useState('')
+  const [jsonInput, setJsonInput] = useState('')
+  const [importError, setImportError] = useState<string | null>(null)
+  const [importSuccess, setImportSuccess] = useState<string | null>(null)
+  const [playingKey, setPlayingKey] = useState<string | null>(null)
+  const [dailyLimit, setLocalDailyLimit] = useState<number>(() =>
+    getDailyNewLimit()
+  )
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
-  const today = getTodayString();
+  const today = getTodayString()
 
   // Leitner statistics calculation
-  const totalWords = words.length;
-  let masteredCount = 0;
-  let dueReviewsCount = 0;
-  let unstudiedNewCount = 0;
-  const boxCounts = [0, 0, 0, 0, 0]; // 0: streak 0, 1: streak 1, 2: streak 2, 3: streak 3, 4: mastered
+  const totalWords = words.length
+  let masteredCount = 0
+  let dueReviewsCount = 0
+  let unstudiedNewCount = 0
+  const boxCounts = [0, 0, 0, 0, 0] // 0: streak 0, 1: streak 1, 2: streak 2, 3: streak 3, 4: mastered
 
-  words.forEach(card => {
-    const item = progress[card.word];
-    const streak = item ? Math.min(item.streak, 4) : 0;
-    boxCounts[streak]++;
+  words.forEach((card) => {
+    const item = progress[card.word]
+    const streak = item ? Math.min(item.streak, 4) : 0
+    boxCounts[streak]++
     if (streak >= 4) {
-      masteredCount++;
+      masteredCount++
     } else if (!item || (streak === 0 && !item.lastReviewed)) {
-      unstudiedNewCount++;
+      unstudiedNewCount++
     } else if (item.nextDue <= today) {
-      dueReviewsCount++;
+      dueReviewsCount++
     }
-  });
+  })
 
   const filteredWords = words.filter(
-    w =>
+    (w) =>
       w.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
       w.en.toLowerCase().includes(searchQuery.toLowerCase()) ||
       w.ex.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  )
 
   const handlePlayWord = async (word: string) => {
-    const key = `word_${word}`;
-    setPlayingKey(key);
+    const key = `word_${word}`
+    setPlayingKey(key)
     try {
-      await playWordAudio(word);
+      await playWordAudio(word)
     } finally {
-      setTimeout(() => setPlayingKey(prev => prev === key ? null : prev), 700);
+      setTimeout(
+        () => setPlayingKey((prev) => (prev === key ? null : prev)),
+        700
+      )
     }
-  };
+  }
 
   const handlePlaySentence = async (word: string, sentence: string) => {
-    const key = `sentence_${word}`;
-    setPlayingKey(key);
+    const key = `sentence_${word}`
+    setPlayingKey(key)
     try {
-      await playSentenceAudio(sentence);
+      await playSentenceAudio(sentence)
     } finally {
-      setTimeout(() => setPlayingKey(prev => prev === key ? null : prev), 1200);
+      setTimeout(
+        () => setPlayingKey((prev) => (prev === key ? null : prev)),
+        1200
+      )
     }
-  };
+  }
 
   const handleLimitSelect = (limit: number) => {
-    setLocalDailyLimit(limit);
-    setDailyNewLimit(limit);
+    setLocalDailyLimit(limit)
+    setDailyNewLimit(limit)
     if (onDailyLimitChange) {
-      onDailyLimitChange(limit);
+      onDailyLimitChange(limit)
     }
-  };
+  }
 
   const handleJsonSubmit = () => {
-    setImportError(null);
-    setImportSuccess(null);
+    setImportError(null)
+    setImportSuccess(null)
     try {
-      const parsed = JSON.parse(jsonInput);
+      const parsed = JSON.parse(jsonInput)
       if (!Array.isArray(parsed) || parsed.length === 0) {
-        throw new Error('JSON moet een array van woorden bevatten.');
+        throw new Error('JSON moet een array van woorden bevatten.')
       }
       for (const item of parsed) {
         if (!item.word || !item.en || !item.ex) {
-          throw new Error('Elk item moet "word", "en", en "ex" bevatten.');
+          throw new Error('Elk item moet "word", "en", en "ex" bevatten.')
         }
       }
-      onImportWords(parsed);
-      setImportSuccess(`Succesvol ${parsed.length} woorden geïmporteerd!`);
-      setJsonInput('');
+      onImportWords(parsed)
+      setImportSuccess(`Succesvol ${parsed.length} woorden geïmporteerd!`)
+      setJsonInput('')
     } catch (err: any) {
-      setImportError(err.message || 'Ongeldige JSON structuur.');
+      setImportError(err.message || 'Ongeldige JSON structuur.')
     }
-  };
+  }
 
   // Helper to render sentence with bold target word(s) - supports multiple like *enerzijds* and *anderzijds*
   const renderSentenceWithBold = (sentence: string) => {
-    const tokens = sentence.split(/(\*.*?\*)/g);
+    const tokens = sentence.split(/(\*.*?\*)/g)
     return (
       <span>
         {tokens.map((token, idx) => {
@@ -123,13 +139,13 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               <strong key={idx} className="text-[#8d4b00] font-bold">
                 {token.slice(1, -1)}
               </strong>
-            );
+            )
           }
-          return <React.Fragment key={idx}>{token}</React.Fragment>;
+          return <React.Fragment key={idx}>{token}</React.Fragment>
         })}
       </span>
-    );
-  };
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
@@ -137,8 +153,12 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         {/* Modal Header */}
         <div className="p-4 px-6 border-b border-[#eeedf7] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#1a1b22]">Vlaams Woordenboek & Voortgang</h2>
-            <p className="text-xs text-[#554336]">Woordenschat B1 (Leitner Systeem)</p>
+            <h2 className="text-lg font-bold text-[#1a1b22]">
+              Vlaams Woordenboek & Voortgang
+            </h2>
+            <p className="text-xs text-[#554336]">
+              Woordenschat B1 (Leitner Systeem)
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -193,18 +213,28 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                 </span>
                 <div className="grid grid-cols-3 gap-3 mt-3">
                   <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
-                    <span className="text-xl font-extrabold text-[#1a1b22] block">{dueReviewsCount}</span>
-                    <span className="text-[10px] text-[#554336] font-medium">Herhalingen</span>
+                    <span className="text-xl font-extrabold text-[#1a1b22] block">
+                      {dueReviewsCount}
+                    </span>
+                    <span className="text-[10px] text-[#554336] font-medium">
+                      Herhalingen
+                    </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
                     <span className="text-xl font-extrabold text-[#8d4b00] block">
                       {Math.min(unstudiedNewCount, dailyLimit)}
                     </span>
-                    <span className="text-[10px] text-[#554336] font-medium">Nieuw Vandaag</span>
+                    <span className="text-[10px] text-[#554336] font-medium">
+                      Nieuw Vandaag
+                    </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-white border border-[#eeedf7] text-center">
-                    <span className="text-xl font-extrabold text-[#00714e] block">{masteredCount}</span>
-                    <span className="text-[10px] text-[#554336] font-medium">Beheerst</span>
+                    <span className="text-xl font-extrabold text-[#00714e] block">
+                      {masteredCount}
+                    </span>
+                    <span className="text-[10px] text-[#554336] font-medium">
+                      Beheerst
+                    </span>
                   </div>
                 </div>
 
@@ -214,7 +244,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                     Nieuwe woorden per sessie:
                   </span>
                   <div className="flex gap-1.5">
-                    {[10, 15, 20].map(n => (
+                    {[10, 15, 20].map((n) => (
                       <button
                         key={n}
                         onClick={() => handleLimitSelect(n)}
@@ -233,27 +263,49 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
               {/* Leitner Box Breakdown */}
               <div>
-                <h4 className="font-bold text-[#1a1b22] text-sm mb-2">Leitner Dozen Verdeling</h4>
+                <h4 className="font-bold text-[#1a1b22] text-sm mb-2">
+                  Leitner Dozen Verdeling
+                </h4>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">Doos 0 (Nieuw / Vandaag gemist)</span>
-                    <span className="font-bold text-[#1a1b22]">{boxCounts[0]} woorden</span>
+                    <span className="font-semibold text-[#1a1b22]">
+                      Doos 0 (Nieuw / Vandaag gemist)
+                    </span>
+                    <span className="font-bold text-[#1a1b22]">
+                      {boxCounts[0]} woorden
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">Doos 1 (+1 dag interval)</span>
-                    <span className="font-bold text-[#1a1b22]">{boxCounts[1]} woorden</span>
+                    <span className="font-semibold text-[#1a1b22]">
+                      Doos 1 (+1 dag interval)
+                    </span>
+                    <span className="font-bold text-[#1a1b22]">
+                      {boxCounts[1]} woorden
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">Doos 2 (+3 dagen interval)</span>
-                    <span className="font-bold text-[#1a1b22]">{boxCounts[2]} woorden</span>
+                    <span className="font-semibold text-[#1a1b22]">
+                      Doos 2 (+3 dagen interval)
+                    </span>
+                    <span className="font-bold text-[#1a1b22]">
+                      {boxCounts[2]} woorden
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#eeedf7]">
-                    <span className="font-semibold text-[#1a1b22]">Doos 3 (+7 dagen interval)</span>
-                    <span className="font-bold text-[#1a1b22]">{boxCounts[3]} woorden</span>
+                    <span className="font-semibold text-[#1a1b22]">
+                      Doos 3 (+7 dagen interval)
+                    </span>
+                    <span className="font-bold text-[#1a1b22]">
+                      {boxCounts[3]} woorden
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#82f5c1]/20">
-                    <span className="font-semibold text-[#00714e]">Doos 4 (+30 dagen / Beheerst 🎉)</span>
-                    <span className="font-bold text-[#00714e]">{boxCounts[4]} woorden</span>
+                    <span className="font-semibold text-[#00714e]">
+                      Doos 4 (+30 dagen / Beheerst 🎉)
+                    </span>
+                    <span className="font-bold text-[#00714e]">
+                      {boxCounts[4]} woorden
+                    </span>
                   </div>
                 </div>
               </div>
@@ -281,7 +333,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                   type="text"
                   placeholder="Zoek woord, betekenis of zin..."
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#f4f2fd] border border-[#eeedf7] text-xs text-[#1a1b22] placeholder-[#554336] focus:outline-none focus:border-[#8d4b00]"
                 />
               </div>
@@ -289,13 +341,16 @@ export const StatsModal: React.FC<StatsModalProps> = ({
               {/* Word List with Bold Targets */}
               <div className="space-y-2.5 max-h-[48vh] overflow-y-auto pr-1">
                 {filteredWords.length === 0 ? (
-                  <p className="text-center py-6 text-xs text-[#554336]">Geen woorden gevonden.</p>
+                  <p className="text-center py-6 text-xs text-[#554336]">
+                    Geen woorden gevonden.
+                  </p>
                 ) : (
-                  filteredWords.map(item => {
-                    const prog = progress[item.word];
-                    const streak = prog ? prog.streak : 0;
-                    const isWordPlaying = playingKey === `word_${item.word}`;
-                    const isSentencePlaying = playingKey === `sentence_${item.word}`;
+                  filteredWords.map((item) => {
+                    const prog = progress[item.word]
+                    const streak = prog ? prog.streak : 0
+                    const isWordPlaying = playingKey === `word_${item.word}`
+                    const isSentencePlaying =
+                      playingKey === `sentence_${item.word}`
 
                     return (
                       <div
@@ -317,7 +372,9 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-[#8d4b00] font-medium">{item.en}</p>
+                          <p className="text-xs text-[#8d4b00] font-medium">
+                            {item.en}
+                          </p>
                           {/* Polish: Target word directly bolded in the sentence row */}
                           <p className="text-xs text-[#554336] leading-relaxed">
                             {renderSentenceWithBold(item.ex)}
@@ -336,11 +393,16 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                                 : 'bg-[#eeedf7] hover:bg-[#e8e7f1] text-[#8d4b00]'
                             }`}
                           >
-                            <Icon name={isWordPlaying ? 'graphic_eq' : 'volume_up'} size={17} />
+                            <Icon
+                              name={isWordPlaying ? 'graphic_eq' : 'volume_up'}
+                              size={17}
+                            />
                           </button>
 
                           <button
-                            onClick={() => handlePlaySentence(item.word, item.ex)}
+                            onClick={() =>
+                              handlePlaySentence(item.word, item.ex)
+                            }
                             title="Beluister voorbeeldzin"
                             aria-label={`Beluister voorbeeldzin voor ${item.word}`}
                             className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
@@ -349,11 +411,18 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                                 : 'bg-[#eeedf7] hover:bg-[#e3e1ec] text-[#554336]'
                             }`}
                           >
-                            <Icon name={isSentencePlaying ? 'graphic_eq' : 'record_voice_over'} size={17} />
+                            <Icon
+                              name={
+                                isSentencePlaying
+                                  ? 'graphic_eq'
+                                  : 'record_voice_over'
+                              }
+                              size={17}
+                            />
                           </button>
                         </div>
                       </div>
-                    );
+                    )
                   })
                 )}
               </div>
@@ -363,15 +432,18 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           {activeTab === 'import' && (
             <div className="space-y-4">
               <p className="text-xs text-[#554336] leading-relaxed">
-                Plak hieronder je eigen 3-veld JSON woordenlijst (bijv. voor verdere B1 hoofdstukken).
-                Elk item moet exact de velden <code className="bg-[#eeedf7] px-1 rounded">word</code>,{' '}
+                Plak hieronder je eigen 3-veld JSON woordenlijst (bijv. voor
+                verdere B1 hoofdstukken). Elk item moet exact de velden{' '}
+                <code className="bg-[#eeedf7] px-1 rounded">word</code>,{' '}
                 <code className="bg-[#eeedf7] px-1 rounded">en</code>, en{' '}
-                <code className="bg-[#eeedf7] px-1 rounded">ex</code> (met <code className="bg-[#eeedf7] px-1 rounded">*doelwoord*</code>) bevatten.
+                <code className="bg-[#eeedf7] px-1 rounded">ex</code> (met{' '}
+                <code className="bg-[#eeedf7] px-1 rounded">*doelwoord*</code>)
+                bevatten.
               </p>
 
               <textarea
                 value={jsonInput}
-                onChange={e => setJsonInput(e.target.value)}
+                onChange={(e) => setJsonInput(e.target.value)}
                 placeholder={`[\n  {\n    "word": "aankondigen",\n    "en": "To announce",\n    "ex": "We zullen het morgen *aankondigen*."\n  }\n]`}
                 rows={8}
                 className="w-full p-3 font-mono text-xs rounded-xl bg-[#f4f2fd] border border-[#eeedf7] focus:outline-none focus:border-[#8d4b00] text-[#1a1b22]"
@@ -408,5 +480,5 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

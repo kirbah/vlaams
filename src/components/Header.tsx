@@ -1,13 +1,17 @@
-import React from 'react';
-import { Icon } from './Icon';
+import React from 'react'
+import { Icon } from './Icon'
 
 interface HeaderProps {
-  onOpenStats: () => void;
-  onResetSession: () => void;
-  title?: string;
+  onOpenStats: () => void
+  onResetSession: () => void
+  title?: string
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenStats, onResetSession, title = 'Study' }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenStats,
+  onResetSession,
+  title = 'Study',
+}) => {
   return (
     <header className="fixed top-0 inset-x-0 z-40 bg-[#fbf8ff]/85 backdrop-blur-xl border-b border-[#eeedf7] pt-safe transition-colors">
       <div className="max-w-md mx-auto h-14 px-4 flex items-center justify-between">
@@ -42,5 +46,5 @@ export const Header: React.FC<HeaderProps> = ({ onOpenStats, onResetSession, tit
         </div>
       </div>
     </header>
-  );
-};
+  )
+}

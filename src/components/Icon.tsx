@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export type IconName =
   | 'restart_alt'
@@ -16,12 +16,12 @@ export type IconName =
   | 'check'
   | 'task_alt'
   | 'add_circle'
-  | 'person';
+  | 'person'
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
-  name: IconName;
-  size?: number | string;
-  className?: string;
+  name: IconName
+  size?: number | string
+  className?: string
 }
 
 export const Icon: React.FC<IconProps> = ({
@@ -30,7 +30,7 @@ export const Icon: React.FC<IconProps> = ({
   className = '',
   ...props
 }) => {
-  const pixelSize = typeof size === 'number' ? `${size}px` : size;
+  const pixelSize = typeof size === 'number' ? `${size}px` : size
 
   const renderPath = () => {
     switch (name) {
@@ -46,7 +46,7 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
             />
           </>
-        );
+        )
 
       case 'graphic_eq':
         return (
@@ -57,7 +57,7 @@ export const Icon: React.FC<IconProps> = ({
             <rect x="15" y="6" width="2" height="12" rx="1" />
             <rect x="19" y="9" width="2" height="6" rx="1" />
           </g>
-        );
+        )
 
       case 'record_voice_over':
         return (
@@ -78,7 +78,7 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
             />
           </>
-        );
+        )
 
       case 'close':
         return (
@@ -90,7 +90,7 @@ export const Icon: React.FC<IconProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        );
+        )
 
       case 'check':
         return (
@@ -102,12 +102,19 @@ export const Icon: React.FC<IconProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        );
+        )
 
       case 'check_circle':
         return (
           <>
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
               d="M8.5 12.5l2.5 2.5 4.5-5"
               fill="none"
@@ -117,13 +124,20 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinejoin="round"
             />
           </>
-        );
+        )
 
       case 'task_alt':
         return (
           <>
             <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.2" />
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+            />
             <path
               d="M8 12.5l2.5 2.5 5.5-6"
               fill="none"
@@ -133,12 +147,19 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinejoin="round"
             />
           </>
-        );
+        )
 
       case 'search':
         return (
           <>
-            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
               d="M16.5 16.5L21 21"
               fill="none"
@@ -147,7 +168,7 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
             />
           </>
-        );
+        )
 
       case 'restart_alt':
         return (
@@ -161,7 +182,7 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinejoin="round"
             />
           </>
-        );
+        )
 
       case 'visibility':
         return (
@@ -174,9 +195,16 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
           </>
-        );
+        )
 
       case 'touch_app':
         return (
@@ -184,12 +212,19 @@ export const Icon: React.FC<IconProps> = ({
             d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.44-.72c-.08-.02-.17-.03-.25-.03-.38 0-.73.16-.98.41L4.6 18.63l5.06 5.06c.35.35.84.56 1.35.56h7.62c.93 0 1.73-.64 1.93-1.55l1.04-4.86c.03-.13.04-.26.04-.39 0-.75-.45-1.42-1.16-1.73l-.64-.29z"
             fill="currentColor"
           />
-        );
+        )
 
       case 'schedule':
         return (
           <>
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
               d="M12 7v5l3 2"
               fill="none"
@@ -199,7 +234,7 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinejoin="round"
             />
           </>
-        );
+        )
 
       case 'arrow_back':
         return (
@@ -211,7 +246,7 @@ export const Icon: React.FC<IconProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        );
+        )
 
       case 'arrow_forward':
         return (
@@ -223,12 +258,19 @@ export const Icon: React.FC<IconProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        );
+        )
 
       case 'add_circle':
         return (
           <>
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
               d="M12 8v8M8 12h8"
               fill="none"
@@ -237,12 +279,19 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
             />
           </>
-        );
+        )
 
       case 'person':
         return (
           <>
-            <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle
+              cx="12"
+              cy="8"
+              r="4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
               d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"
               fill="none"
@@ -251,12 +300,12 @@ export const Icon: React.FC<IconProps> = ({
               strokeLinecap="round"
             />
           </>
-        );
+        )
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <svg
@@ -269,5 +318,5 @@ export const Icon: React.FC<IconProps> = ({
     >
       {renderPath()}
     </svg>
-  );
-};
+  )
+}
