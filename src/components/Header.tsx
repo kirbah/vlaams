@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls: [undo] -> [arrow_back] -> [person] -> [dark_mode] */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-5">
           {/* 1. Undo */}
           {onUndo && (
             <button
