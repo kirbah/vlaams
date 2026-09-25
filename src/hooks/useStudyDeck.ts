@@ -14,9 +14,10 @@ import {
   resetStoredWordsToDefault,
   initDeck,
   processAnswer,
-  getDailyNewLimit,
-  setDailyNewLimit,
+  getSessionBatchSize,
+  setSessionBatchSize,
   getRemainingNewCardsCount,
+  getRemainingDueCardsCount,
 } from '../utils/leitner'
 
 interface DeckHistorySnapshot {
@@ -28,8 +29,8 @@ interface DeckHistorySnapshot {
 export function useStudyDeck() {
   const [words, setWords] = useState<WordCard[]>(() => loadStoredWords())
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress())
-  const [dailyLimit, setDailyLimitState] = useState<number>(() =>
-    getDailyNewLimit()
+  const [batchSize, setBatchSizeState] = useState<number>(() =>
+    getSessionBatchSize()
   )
   const [studyMode, setStudyMode] = useState<'due_only' | 'practice_all'>(
     'due_only'
@@ -40,7 +41,7 @@ export function useStudyDeck() {
       loadStoredWords(),
       loadProgress(),
       'due_only',
-      getDailyNewLimit(),
+      getSessionBatchSize(),
       0
     )
   )
@@ -50,7 +51,7 @@ export function useStudyDeck() {
         loadStoredWords(),
         loadProgress(),
         'due_only',
-        getDailyNewLimit(),
+        getSessionBatchSize(),
         0
       ).length
   )
@@ -75,7 +76,7 @@ export function useStudyDeck() {
               data,
               loadProgress(),
               'due_only',
-              getDailyNewLimit(),
+              getSessionBatchSize(),
               0
             )
             setQueue(active)
@@ -91,7 +92,7 @@ export function useStudyDeck() {
   }, [])
 
   const startSession = useCallback(
-    (mode: 'due_only' | 'practice_all' = 'due_only', limit = dailyLimit) => {
+    (mode: 'due_only' | 'practice_all' = 'due_only', limit = batchSize) => {
       setStudyMode(mode)
       const active = initDeck(words, progress, mode, limit, 0)
       setQueue(active)
@@ -99,7 +100,7 @@ export function useStudyDeck() {
       setSessionReviewedCount(0)
       setHistory([])
     },
-    [words, progress, dailyLimit]
+    [words, progress, batchSize]
   )
 
   const handleAnswer = useCallback(
@@ -150,12 +151,12 @@ export function useStudyDeck() {
   }, [])
 
   const restartSession = useCallback(() => {
-    startSession(studyMode, dailyLimit)
-  }, [startSession, studyMode, dailyLimit])
+    startSession(studyMode, batchSize)
+  }, [startSession, studyMode, batchSize])
 
   const nextBatch = useCallback(() => {
-    startSession('due_only', dailyLimit)
-  }, [startSession, dailyLimit])
+    startSession('due_only', batchSize)
+  }, [startSession, batchSize])
 
   const practiceAll = useCallback(() => {
     startSession('practice_all')
@@ -165,12 +166,12 @@ export function useStudyDeck() {
     clearProgress()
     const emptyProgress: ProgressData = {}
     setProgress(emptyProgress)
-    const active = initDeck(words, emptyProgress, 'due_only', dailyLimit, 0)
+    const active = initDeck(words, emptyProgress, 'due_only', batchSize, 0)
     setQueue(active)
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
     setHistory([])
-  }, [words, dailyLimit])
+  }, [words, batchSize])
 
   const importWords = useCallback(
     (newWords: WordCard[]) => {
@@ -179,19 +180,13 @@ export function useStudyDeck() {
       const emptyProgress: ProgressData = {}
       setProgress(emptyProgress)
       clearProgress()
-      const active = initDeck(
-        newWords,
-        emptyProgress,
-        'due_only',
-        dailyLimit,
-        0
-      )
+      const active = initDeck(newWords, emptyProgress, 'due_only', batchSize, 0)
       setQueue(active)
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
       setHistory([])
     },
-    [dailyLimit]
+    [batchSize]
   )
 
   const resetToDefault = useCallback(() => {
@@ -202,20 +197,20 @@ export function useStudyDeck() {
       DEFAULT_WORDS,
       currentProg,
       'due_only',
-      dailyLimit,
+      batchSize,
       0
     )
     setQueue(active)
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
     setHistory([])
-  }, [dailyLimit])
+  }, [batchSize])
 
-  const changeDailyLimit = useCallback(
-    (newLimit: number) => {
-      setDailyLimitState(newLimit)
-      setDailyNewLimit(newLimit)
-      startSession('due_only', newLimit)
+  const changeBatchSize = useCallback(
+    (newSize: number) => {
+      setBatchSizeState(newSize)
+      setSessionBatchSize(newSize)
+      startSession('due_only', newSize)
     },
     [startSession]
   )
@@ -224,6 +219,7 @@ export function useStudyDeck() {
     (p) => p.streak >= 4
   ).length
   const remainingNewCount = getRemainingNewCardsCount(words, progress)
+  const remainingDueCount = getRemainingDueCardsCount(words, progress)
 
   return {
     words,
@@ -232,9 +228,10 @@ export function useStudyDeck() {
     currentCard: queue[0] as WordCard | undefined,
     initialDueCount,
     sessionReviewedCount,
-    dailyLimit,
+    batchSize,
     masteredCount,
     remainingNewCount,
+    remainingDueCount,
     canUndo: history.length > 0,
     undoCount: history.length,
     undo,
@@ -245,6 +242,6 @@ export function useStudyDeck() {
     wipeAllProgress,
     importWords,
     resetToDefault,
-    changeDailyLimit,
+    changeBatchSize,
   }
 }

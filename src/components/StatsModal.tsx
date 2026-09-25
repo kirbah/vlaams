@@ -4,8 +4,8 @@ import {
   playWordAudio,
   playSentenceAudio,
   getTodayString,
-  getDailyNewLimit,
-  setDailyNewLimit,
+  getSessionBatchSize,
+  setSessionBatchSize,
 } from '../utils/leitner'
 import { Icon } from './Icon'
 
@@ -17,7 +17,7 @@ interface StatsModalProps {
   onImportWords: (newWords: WordCard[]) => void
   onResetToDefault: () => void
   onWipeProgress: () => void
-  onDailyLimitChange?: (newLimit: number) => void
+  onBatchSizeChange?: (newSize: number) => void
 }
 
 export const StatsModal: React.FC<StatsModalProps> = ({
@@ -28,7 +28,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   onImportWords,
   onResetToDefault,
   onWipeProgress,
-  onDailyLimitChange,
+  onBatchSizeChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'stats' | 'dictionary' | 'import'>(
     'stats'
@@ -38,8 +38,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   const [importError, setImportError] = useState<string | null>(null)
   const [importSuccess, setImportSuccess] = useState<string | null>(null)
   const [playingKey, setPlayingKey] = useState<string | null>(null)
-  const [dailyLimit, setLocalDailyLimit] = useState<number>(() =>
-    getDailyNewLimit()
+  const [batchSize, setLocalBatchSize] = useState<number>(() =>
+    getSessionBatchSize()
   )
 
   if (!isOpen) return null
@@ -97,11 +97,11 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     }
   }
 
-  const handleLimitSelect = (limit: number) => {
-    setLocalDailyLimit(limit)
-    setDailyNewLimit(limit)
-    if (onDailyLimitChange) {
-      onDailyLimitChange(limit)
+  const handleBatchSizeSelect = (size: number) => {
+    setLocalBatchSize(size)
+    setSessionBatchSize(size)
+    if (onBatchSizeChange) {
+      onBatchSizeChange(size)
     }
   }
 
@@ -221,10 +221,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                   </div>
                   <div className="p-2.5 rounded-lg bg-card border border-border-subtle text-center">
                     <span className="text-xl font-extrabold text-brand-text block">
-                      {Math.min(unstudiedNewCount, dailyLimit)}
+                      {Math.min(unstudiedNewCount, batchSize)}
                     </span>
                     <span className="text-[10px] text-muted font-medium">
-                      Nieuw Vandaag
+                      Nieuw Beschikbaar
                     </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-card border border-border-subtle text-center">
@@ -240,15 +240,15 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                 {/* Batch Size Selector */}
                 <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between">
                   <span className="text-xs text-muted font-medium">
-                    Nieuwe woorden per sessie:
+                    Woorden per sessie:
                   </span>
                   <div className="flex gap-1.5">
                     {[10, 15, 20].map((n) => (
                       <button
                         key={n}
-                        onClick={() => handleLimitSelect(n)}
+                        onClick={() => handleBatchSizeSelect(n)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                          dailyLimit === n
+                          batchSize === n
                             ? 'bg-brand text-brand-contrast shadow-xs'
                             : 'bg-card text-muted hover:bg-subtle border border-border-subtle'
                         }`}

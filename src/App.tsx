@@ -23,9 +23,10 @@ export default function App() {
     currentCard,
     initialDueCount,
     sessionReviewedCount,
-    dailyLimit,
+    batchSize,
     masteredCount,
     remainingNewCount,
+    remainingDueCount,
     canUndo,
     undoCount,
     undo,
@@ -36,7 +37,7 @@ export default function App() {
     wipeAllProgress,
     importWords,
     resetToDefault,
-    changeDailyLimit,
+    changeBatchSize,
   } = useStudyDeck()
 
   // Global keyboard shortcut for Undo (Z or Ctrl+Z / Cmd+Z)
@@ -90,7 +91,8 @@ export default function App() {
             totalWords={words.length}
             masteredCount={masteredCount}
             remainingNewCount={remainingNewCount}
-            dailyLimit={dailyLimit}
+            remainingDueCount={remainingDueCount}
+            batchSize={batchSize}
             canUndo={canUndo}
             undoCount={undoCount}
             onUndo={undo}
@@ -110,7 +112,7 @@ export default function App() {
         onImportWords={importWords}
         onResetToDefault={resetToDefault}
         onWipeProgress={wipeAllProgress}
-        onDailyLimitChange={changeDailyLimit}
+        onBatchSizeChange={changeBatchSize}
       />
 
       {/* Reset Confirmation Modal */}

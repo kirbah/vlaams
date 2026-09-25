@@ -13,8 +13,9 @@ export * from './audio'
 
 export const PROGRESS_STORAGE_KEY = 'vlaams_progress'
 export const CUSTOM_WORDS_KEY = 'vlaams_custom_words'
-export const DAILY_LIMIT_STORAGE_KEY = 'vlaams_daily_limit'
-export const DEFAULT_DAILY_NEW_LIMIT = 15
+export const BATCH_SIZE_STORAGE_KEY = 'vlaams_batch_size'
+export const LEGACY_DAILY_LIMIT_STORAGE_KEY = 'vlaams_daily_limit'
+export const DEFAULT_BATCH_SIZE = 15
 
 export const INTERVALS: Record<number, number> = {
   0: 1, // Streak 0 -> 1 day
@@ -53,9 +54,11 @@ export function calculateNextDueDate(daysToAdd: number): string {
 /*                               STORAGE HELPERS                              */
 /* -------------------------------------------------------------------------- */
 
-export function getDailyNewLimit(): number {
+export function getSessionBatchSize(): number {
   try {
-    const val = localStorage.getItem(DAILY_LIMIT_STORAGE_KEY)
+    const val =
+      localStorage.getItem(BATCH_SIZE_STORAGE_KEY) ||
+      localStorage.getItem(LEGACY_DAILY_LIMIT_STORAGE_KEY)
     if (val) {
       const n = parseInt(val, 10)
       if (!isNaN(n) && n > 0) return n
@@ -63,14 +66,14 @@ export function getDailyNewLimit(): number {
   } catch {
     // ignore
   }
-  return DEFAULT_DAILY_NEW_LIMIT
+  return DEFAULT_BATCH_SIZE
 }
 
-export function setDailyNewLimit(limit: number): void {
+export function setSessionBatchSize(size: number): void {
   try {
-    localStorage.setItem(DAILY_LIMIT_STORAGE_KEY, String(limit))
+    localStorage.setItem(BATCH_SIZE_STORAGE_KEY, String(size))
   } catch (err) {
-    console.error('Failed to save daily limit:', err)
+    console.error('Failed to save batch size:', err)
   }
 }
 
@@ -166,6 +169,17 @@ export function getRemainingNewCardsCount(
 }
 
 /**
+ * Counts how many cards are currently due for review
+ */
+export function getRemainingDueCardsCount(
+  allWords: WordCard[],
+  progressData: ProgressData,
+  today: string = getTodayString()
+): number {
+  return getDueReviewCards(allWords, progressData, today).length
+}
+
+/**
  * Immutable Fisher-Yates array shuffle
  */
 export function shuffleDeck<T>(items: readonly T[]): T[] {
@@ -211,14 +225,16 @@ export function parseCard(card: WordCard, currentStreak = 0): ParsedCard {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Builds the study queue:
- * Due Today = (All reviews due from Boxes 1-3) + (New cards up to daily limit).
+ * Builds the study queue with a strict session batch cap:
+ * 1. Prioritize reviews due today up to sessionLimit.
+ * 2. If space remains, fill with brand-new unstudied words.
+ * 3. Never exceed sessionLimit per study round.
  */
 export function initDeck(
   allWords: WordCard[],
   progressData: ProgressData,
   mode: 'due_only' | 'practice_all' = 'due_only',
-  newCardsLimit: number = getDailyNewLimit(),
+  sessionLimit: number = getSessionBatchSize(),
   offsetNew = 0
 ): WordCard[] {
   if (mode === 'practice_all') {
@@ -229,8 +245,14 @@ export function initDeck(
   const reviewsDue = getDueReviewCards(allWords, progressData, today)
   const brandNewCards = getBrandNewCards(allWords, progressData)
 
-  const selectedNew = brandNewCards.slice(offsetNew, offsetNew + newCardsLimit)
-  return shuffleDeck([...reviewsDue, ...selectedNew])
+  // 1. Take due reviews up to sessionLimit
+  const sessionReviews = reviewsDue.slice(0, sessionLimit)
+
+  // 2. Fill remaining capacity with brand-new words
+  const remainingSlots = Math.max(0, sessionLimit - sessionReviews.length)
+  const sessionNew = brandNewCards.slice(offsetNew, offsetNew + remainingSlots)
+
+  return shuffleDeck([...sessionReviews, ...sessionNew])
 }
 
 /* -------------------------------------------------------------------------- */

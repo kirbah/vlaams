@@ -6,7 +6,8 @@ interface CompletionViewProps {
   totalWords: number
   masteredCount: number
   remainingNewCount: number
-  dailyLimit: number
+  remainingDueCount: number
+  batchSize: number
   canUndo?: boolean
   undoCount?: number
   onUndo?: () => void
@@ -20,7 +21,8 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
   totalWords,
   masteredCount,
   remainingNewCount,
-  dailyLimit,
+  remainingDueCount,
+  batchSize,
   canUndo = false,
   undoCount = 0,
   onUndo,
@@ -28,7 +30,21 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
   onResetProgress,
   onPracticeAll,
 }) => {
-  const nextBatchCount = Math.min(remainingNewCount, dailyLimit)
+  const totalRemaining = remainingDueCount + remainingNewCount
+  const nextBatchCount = Math.min(totalRemaining, batchSize)
+
+  const renderDescription = () => {
+    if (totalRemaining === 0) {
+      return 'Geen woorden meer te herhalen vandaag. Kom morgen terug voor de volgende sessie!'
+    }
+    if (remainingDueCount > 0 && remainingNewCount > 0) {
+      return `Sessie voltooid! Je hebt ${reviewedCount} woorden geoefend. Er staan nog ${remainingDueCount} herhalingen en ${remainingNewCount} nieuwe woorden klaar.`
+    }
+    if (remainingDueCount > 0) {
+      return `Sessie voltooid! Je hebt ${reviewedCount} woorden geoefend. Er staan nog ${remainingDueCount} herhalingen klaar voor vandaag.`
+    }
+    return `Sessie voltooid! Je hebt ${reviewedCount} woorden geoefend. Er staan nog ${remainingNewCount} nieuwe woorden klaar.`
+  }
 
   return (
     <div className="w-full min-h-[420px] rounded-2xl bg-card p-8 flex flex-col items-center justify-center text-center shadow-md border border-border-subtle animate-fade-in my-auto transition-colors">
@@ -37,20 +53,18 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
       </div>
 
       <h3 className="text-2xl font-bold text-main tracking-tight">
-        Klaar voor vandaag! 🎉
+        Klaar voor deze ronde! 🎉
       </h3>
 
       <p className="text-sm text-muted mt-2 max-w-xs leading-relaxed">
-        {remainingNewCount > 0
-          ? `Sessie voltooid! Je hebt ${reviewedCount} woorden geoefend. Er staan nog ${remainingNewCount} nieuwe woorden klaar.`
-          : 'Geen woorden meer te herhalen vandaag. Kom morgen terug voor de volgende sessie.'}
+        {renderDescription()}
       </p>
 
       {/* Mini Progress Card */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-6 p-3 rounded-xl bg-subtle border border-border-subtle">
         <div className="text-center">
           <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
-            Sessie voltooid
+            Ronde voltooid
           </span>
           <span className="text-lg font-bold text-main">
             {reviewedCount} woorden
@@ -67,14 +81,14 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
       </div>
 
       <div className="w-full max-w-xs space-y-2.5 mt-6">
-        {/* Next batch button if more new cards exist */}
+        {/* Next batch button if more cards are pending */}
         {nextBatchCount > 0 && (
           <button
             onClick={onNextBatch}
             className="w-full py-3 px-4 rounded-xl bg-brand hover:bg-brand-hover text-brand-contrast text-sm font-bold shadow-sm active:scale-95 transition-all text-center flex items-center justify-center gap-1.5"
           >
             <Icon name="add_circle" size={18} />
-            <span>Volgende batch ({nextBatchCount} nieuwe woorden)</span>
+            <span>Volgende batch ({nextBatchCount} woorden)</span>
           </button>
         )}
 
