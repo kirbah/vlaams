@@ -1,4 +1,3 @@
-# Name of the workflow
 name: Deploy React App to GitHub Pages
 
 on:
@@ -23,16 +22,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Add this new step to run Prettier format check (faster)
       - name: Check code formatting
         run: npm run format:check
 
-      # Add this new step to run ESLint
       - name: Run linter check
         run: npm run lint
 
       - name: Build application
         run: npm run build
+
+      - name: Add build metadata
+        run: |
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          GIT_SHA=$(git rev-parse HEAD)
+          INPUT_REF="${{ github.event.inputs.ref || github.ref }}"
+
+          cat <<EOF > dist/build.json
+          {
+            "time": "$BUILD_TIME",
+            "sha": "$GIT_SHA",
+            "ref": "$INPUT_REF"
+          }
+          EOF
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload artifact
