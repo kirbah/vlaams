@@ -23,6 +23,7 @@ export default function App() {
     currentCard,
     initialDueCount,
     sessionReviewedCount,
+    sessionDuration,
     batchSize,
     masteredCount,
     remainingNewCount,
@@ -93,6 +94,7 @@ export default function App() {
             remainingNewCount={remainingNewCount}
             remainingDueCount={remainingDueCount}
             batchSize={batchSize}
+            durationSeconds={sessionDuration}
             canUndo={canUndo}
             undoCount={undoCount}
             onUndo={undo}

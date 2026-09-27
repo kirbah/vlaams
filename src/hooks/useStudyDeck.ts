@@ -24,6 +24,7 @@ interface DeckHistorySnapshot {
   queue: WordCard[]
   progress: ProgressData
   sessionReviewedCount: number
+  sessionDuration: number
 }
 
 export function useStudyDeck() {
@@ -57,6 +58,12 @@ export function useStudyDeck() {
   )
   const [sessionReviewedCount, setSessionReviewedCount] = useState<number>(0)
 
+  // Track session timer (in seconds)
+  const [sessionStartTime, setSessionStartTime] = useState<number>(() =>
+    Date.now()
+  )
+  const [sessionDuration, setSessionDuration] = useState<number>(0)
+
   // Multi-step undo history stack
   const [history, setHistory] = useState<DeckHistorySnapshot[]>([])
 
@@ -83,6 +90,8 @@ export function useStudyDeck() {
             setInitialDueCount(active.length)
             setSessionReviewedCount(0)
             setHistory([])
+            setSessionStartTime(Date.now())
+            setSessionDuration(0)
           }
         }
       })
@@ -99,6 +108,8 @@ export function useStudyDeck() {
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
       setHistory([])
+      setSessionStartTime(Date.now())
+      setSessionDuration(0)
     },
     [words, progress, batchSize]
   )
@@ -114,6 +125,7 @@ export function useStudyDeck() {
           queue: [...queue],
           progress: { ...progress },
           sessionReviewedCount,
+          sessionDuration,
         },
       ])
 
@@ -129,8 +141,17 @@ export function useStudyDeck() {
       if (isCorrect) {
         setSessionReviewedCount((prev) => prev + 1)
       }
+
+      // If the deck is completed, freeze elapsed time
+      if (updatedDeck.length === 0) {
+        const elapsed = Math.max(
+          1,
+          Math.round((Date.now() - sessionStartTime) / 1000)
+        )
+        setSessionDuration(elapsed)
+      }
     },
-    [queue, progress, sessionReviewedCount]
+    [queue, progress, sessionReviewedCount, sessionDuration, sessionStartTime]
   )
 
   const undo = useCallback(() => {
@@ -144,6 +165,7 @@ export function useStudyDeck() {
       setQueue(lastSnapshot.queue)
       setProgress(lastSnapshot.progress)
       setSessionReviewedCount(lastSnapshot.sessionReviewedCount)
+      setSessionDuration(lastSnapshot.sessionDuration)
       saveProgress(lastSnapshot.progress)
 
       return newHistory
@@ -171,6 +193,8 @@ export function useStudyDeck() {
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
     setHistory([])
+    setSessionStartTime(Date.now())
+    setSessionDuration(0)
   }, [words, batchSize])
 
   const importWords = useCallback(
@@ -185,6 +209,8 @@ export function useStudyDeck() {
       setInitialDueCount(active.length)
       setSessionReviewedCount(0)
       setHistory([])
+      setSessionStartTime(Date.now())
+      setSessionDuration(0)
     },
     [batchSize]
   )
@@ -204,6 +230,8 @@ export function useStudyDeck() {
     setInitialDueCount(active.length)
     setSessionReviewedCount(0)
     setHistory([])
+    setSessionStartTime(Date.now())
+    setSessionDuration(0)
   }, [batchSize])
 
   const changeBatchSize = useCallback(
@@ -228,6 +256,7 @@ export function useStudyDeck() {
     currentCard: queue[0] as WordCard | undefined,
     initialDueCount,
     sessionReviewedCount,
+    sessionDuration,
     batchSize,
     masteredCount,
     remainingNewCount,

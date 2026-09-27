@@ -8,12 +8,22 @@ interface CompletionViewProps {
   remainingNewCount: number
   remainingDueCount: number
   batchSize: number
+  durationSeconds?: number
   canUndo?: boolean
   undoCount?: number
   onUndo?: () => void
   onNextBatch: () => void
   onResetProgress: () => void
   onPracticeAll: () => void
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds < 60) {
+    return `${seconds}s`
+  }
+  const mins = Math.floor(seconds / 60)
+  const rem = seconds % 60
+  return rem === 0 ? `${mins}m` : `${mins}m ${String(rem).padStart(2, '0')}s`
 }
 
 export const CompletionView: React.FC<CompletionViewProps> = ({
@@ -23,6 +33,7 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
   remainingNewCount,
   remainingDueCount,
   batchSize,
+  durationSeconds = 0,
   canUndo = false,
   undoCount = 0,
   onUndo,
@@ -60,21 +71,29 @@ export const CompletionView: React.FC<CompletionViewProps> = ({
         {renderDescription()}
       </p>
 
-      {/* Mini Progress Card */}
-      <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-6 p-3 rounded-xl bg-subtle border border-border-subtle">
-        <div className="text-center">
-          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
-            Ronde voltooid
+      {/* Mini Progress Card: 3 Columns (Woorden | Tijd | Beheerst) */}
+      <div className="grid grid-cols-3 gap-2 w-full max-w-xs mt-6 p-3 rounded-xl bg-subtle border border-border-subtle">
+        <div className="text-center min-w-0">
+          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block truncate">
+            Woorden
           </span>
-          <span className="text-lg font-bold text-main">
-            {reviewedCount} woorden
+          <span className="text-lg font-bold text-main block truncate">
+            {reviewedCount}
           </span>
         </div>
-        <div className="text-center">
-          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
+        <div className="text-center min-w-0 border-x border-border-subtle/70 px-1">
+          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block truncate">
+            Tijd
+          </span>
+          <span className="text-lg font-bold text-main block truncate">
+            {formatDuration(durationSeconds)}
+          </span>
+        </div>
+        <div className="text-center min-w-0">
+          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block truncate">
             Beheerst
           </span>
-          <span className="text-lg font-bold text-success-text">
+          <span className="text-lg font-bold text-success-text block truncate">
             {masteredCount} / {totalWords}
           </span>
         </div>
