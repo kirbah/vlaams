@@ -370,11 +370,11 @@ async function main() {
   console.log(`========================================`)
   console.log(
     `\nConvert your .wav files to .opus in PowerShell with:\n` +
-    `  cd wav\n` +
-    `  Get-ChildItem -Filter "*.wav" | ForEach-Object {\n` +
-    `      $baseName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)\n` +
-    `      ffmpeg -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
-    `  }\n`
+      `  cd wav\n` +
+      `  Get-ChildItem -Filter "*.wav" | ForEach-Object {\n` +
+      `      $baseName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)\n` +
+      `      ffmpeg -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
+      `  }\n`
   )
 }
 
