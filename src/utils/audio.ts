@@ -10,7 +10,7 @@
  * When `false`, the app directly uses the browser's SpeechSynthesis API,
  * avoiding 404 console errors for missing files.
  */
-export const ENABLE_AUDIO_FILES = false
+export const ENABLE_AUDIO_FILES = true
 
 /**
  * Single place to construct audio URLs for words and sentences.
