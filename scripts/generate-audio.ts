@@ -38,10 +38,10 @@ const CONFIG = {
   model: process.env.GEMINI_MODEL || 'gemini-3.8-flash-tts',
   voiceName: 'Iapetus', // Options: Iapetus, Charon, Erinome, Sulafat
   voiceStyle:
-    'VRT nieuwsstijl, algemeen beschaafd vlaams met een subtiele gentse tongval, rustig en professioneel',
+    'VRT nieuwsstijl, algemeen beschaafd vlaams met een subtiele gentse tongval, rustig en professioneel. Gebruik onder geen beding Engelse of Nederlandse uitspraakregels.',
 
   // Delay between API calls in ms to respect rate limits
-  requestDelayMs: 1200,
+  requestDelayMs: 60000,
 }
 
 // ---------------------------------------------------------------------------
@@ -195,6 +195,7 @@ async function synthesizeTextToWav(
     temperature: 1,
     responseModalities: ['audio'],
     speechConfig: {
+      languageCode: 'nl-BE',
       voiceConfig: {
         prebuiltVoiceConfig: {
           voiceName: CONFIG.voiceName,
@@ -369,11 +370,11 @@ async function main() {
   console.log(`========================================`)
   console.log(
     `\nConvert your .wav files to .opus in PowerShell with:\n` +
-      `  cd wav\n` +
-      `  Get-ChildItem -Filter "*.wav" | ForEach-Object {\n` +
-      `      $baseName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)\n` +
-      `      ffmpeg -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
-      `  }\n`
+    `  cd wav\n` +
+    `  Get-ChildItem -Filter "*.wav" | ForEach-Object {\n` +
+    `      $baseName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)\n` +
+    `      ffmpeg -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
+    `  }\n`
   )
 }
 
