@@ -373,7 +373,7 @@ async function main() {
       `  cd wav\n` +
       `  Get-ChildItem -Filter "*.wav" | ForEach-Object {\n` +
       `      $baseName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)\n` +
-      `      ffmpeg -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
+      `      ffmpeg -n -i $_.FullName -c:a libopus -b:a 64k "$baseName.opus"\n` +
       `  }\n`
   )
 }
