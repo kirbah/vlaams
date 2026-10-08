@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@google/genai": "^2.26.0",
+    "@google/genai": "^2.27.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
